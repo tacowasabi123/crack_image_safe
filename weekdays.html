@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>주 7일 근무</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Jua&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --fridge: #eef0ec;
+    --fridge-edge: #d9ddd6;
+    --paper: #fffdf6;
+    --ink: #3a3631;
+    --ink-soft: #7a736a;
+    --line: #e7e0d2;
+    --tape: rgba(240, 214, 140, .72);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    color: var(--ink);
+    background:
+      linear-gradient(90deg, transparent 0 calc(100% - 26px), var(--fridge-edge) calc(100% - 26px) calc(100% - 18px), transparent calc(100% - 18px)),
+      linear-gradient(180deg, #f6f7f4 0%, var(--fridge) 100%);
+    min-height: 100vh;
+    padding: 48px 20px 80px;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; }
+
+  /* 헤더 */
+  header { text-align: center; margin-bottom: 44px; position: relative; }
+  .magnet-row { display: flex; justify-content: center; gap: 8px; margin-bottom: 18px; }
+  .magnet-row span {
+    width: 34px; height: 34px; border-radius: 50%;
+    display: grid; place-items: center;
+    font-family: 'Jua', sans-serif; font-size: 15px; color: #fff;
+    box-shadow: 0 3px 0 rgba(0,0,0,.12), inset 0 -3px 0 rgba(0,0,0,.08);
+  }
+  h1 {
+    font-family: 'Jua', sans-serif;
+    font-size: clamp(44px, 8vw, 76px);
+    letter-spacing: -1px;
+    line-height: 1;
+  }
+  .subtitle {
+    margin-top: 14px;
+    font-family: 'Gaegu', cursive;
+    font-size: clamp(20px, 3vw, 25px);
+    color: var(--ink-soft);
+  }
+  .intro {
+    max-width: 620px; margin: 22px auto 0;
+    font-size: 15px; line-height: 1.85; color: var(--ink-soft);
+  }
+  .intro b { color: var(--ink); font-weight: 700; }
+
+  /* 당번표 */
+  .chart {
+    background: var(--paper);
+    border-radius: 6px;
+    padding: 34px 26px 28px;
+    position: relative;
+    box-shadow: 0 1px 0 var(--line), 0 18px 40px -22px rgba(60,50,30,.35);
+    transform: rotate(-.4deg);
+  }
+  .chart::before, .chart::after {
+    content: ''; position: absolute; top: -12px;
+    width: 110px; height: 28px; background: var(--tape);
+  }
+  .chart::before { left: 34px; transform: rotate(-4deg); }
+  .chart::after  { right: 34px; transform: rotate(3deg); }
+  .chart-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-bottom: 2px dashed var(--line); padding-bottom: 14px; margin-bottom: 20px;
+  }
+  .chart-head h2 { font-family: 'Jua', sans-serif; font-size: 26px; }
+  .chart-head p { font-family: 'Gaegu', cursive; font-size: 19px; color: var(--ink-soft); }
+
+  .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; }
+  .day {
+    position: relative;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fff;
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform .18s ease, box-shadow .18s ease;
+    text-align: left;
+    font: inherit; color: inherit;
+  }
+  .day:hover { transform: translateY(-4px); box-shadow: 0 12px 22px -14px rgba(0,0,0,.35); }
+  .day:focus-visible { outline: 3px solid var(--c); outline-offset: 2px; }
+  .day-top {
+    background: var(--c);
+    color: #fff;
+    padding: 8px 10px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .day-top .d { font-family: 'Jua', sans-serif; font-size: 22px; }
+  .day-top .o { font-size: 11px; opacity: .9; }
+  .thumb { aspect-ratio: 1 / 1; background: #f3efe6; overflow: hidden; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .3s; }
+  .day:hover .thumb img { transform: scale(1.05); }
+  .day-body { padding: 10px 10px 12px; }
+  .day-body .n { font-family: 'Jua', sans-serif; font-size: 19px; }
+  .day-body .t { font-size: 12px; color: var(--ink-soft); margin-top: 3px; line-height: 1.45; }
+
+  .day.today { border-color: var(--c); box-shadow: 0 0 0 2px var(--c); }
+  .today-badge {
+    position: absolute; top: 42px; right: -4px; z-index: 2;
+    background: #e8463c; color: #fff;
+    font-family: 'Gaegu', cursive; font-weight: 700; font-size: 16px;
+    padding: 2px 10px 2px 8px;
+    transform: rotate(6deg);
+    box-shadow: 0 2px 4px rgba(0,0,0,.2);
+    display: none;
+  }
+  .day.today .today-badge { display: block; }
+
+  /* 규칙 메모 */
+  .notes { display: grid; grid-template-columns: 1.3fr 1fr; gap: 26px; margin-top: 44px; }
+  .memo {
+    background: #fff6b8;
+    padding: 26px 26px 22px;
+    font-family: 'Gaegu', cursive;
+    font-size: 20px; line-height: 1.6;
+    box-shadow: 0 14px 24px -18px rgba(60,50,0,.5);
+    transform: rotate(.8deg);
+    position: relative;
+  }
+  .memo.blue { background: #dcefff; transform: rotate(-1deg); }
+  .memo h3 { font-family: 'Jua', sans-serif; font-size: 22px; margin-bottom: 10px; }
+  .memo ol, .memo ul { padding-left: 22px; }
+  .memo .pin {
+    position: absolute; top: -10px; left: 50%; width: 20px; height: 20px; margin-left: -10px;
+    border-radius: 50%; background: #e8463c; box-shadow: 0 3px 0 rgba(0,0,0,.18);
+  }
+  .memo.blue .pin { background: #5bb6e8; }
+
+  .cta { text-align: center; margin-top: 50px; }
+  .cta a {
+    display: inline-block;
+    font-family: 'Jua', sans-serif; font-size: 20px;
+    background: var(--ink); color: #fff; text-decoration: none;
+    padding: 15px 38px; border-radius: 999px;
+    box-shadow: 0 5px 0 #1d1b18;
+    transition: transform .12s, box-shadow .12s;
+  }
+  .cta a:active { transform: translateY(4px); box-shadow: 0 1px 0 #1d1b18; }
+  .cta p { margin-top: 12px; font-size: 13px; color: var(--ink-soft); }
+
+  /* 팝업 */
+  .modal-bg {
+    position: fixed; inset: 0; background: rgba(30,28,25,.55);
+    display: none; align-items: center; justify-content: center;
+    padding: 20px; z-index: 50;
+    backdrop-filter: blur(3px);
+  }
+  .modal-bg.open { display: flex; animation: fade .2s ease; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  .modal {
+    background: var(--paper);
+    width: 100%; max-width: 820px; max-height: 92vh; overflow-y: auto;
+    border-radius: 14px;
+    display: grid; grid-template-columns: 1fr 1fr;
+    position: relative;
+    border-top: 8px solid var(--c);
+    animation: pop .25s cubic-bezier(.2,1.3,.4,1);
+  }
+  @keyframes pop { from { transform: scale(.94); } to { transform: scale(1); } }
+  .close {
+    position: absolute; top: 10px; right: 12px; z-index: 3;
+    width: 36px; height: 36px; border-radius: 50%; border: none;
+    background: rgba(255,255,255,.9); font-size: 20px; cursor: pointer; color: var(--ink);
+  }
+  .m-img { background: #f3efe6; display: flex; flex-direction: column; }
+  .m-img .main { aspect-ratio: 1 / 1; width: 100%; object-fit: cover; display: block; }
+  .emotions { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px; }
+  .emotions button {
+    font: 500 13px 'Noto Sans KR', sans-serif;
+    border: 1px solid var(--line); background: #fff; color: var(--ink-soft);
+    padding: 5px 11px; border-radius: 999px; cursor: pointer;
+  }
+  .emotions button.on { background: var(--c); border-color: var(--c); color: #fff; }
+  .m-info { padding: 30px 28px 28px; }
+  .m-day { font-family: 'Jua', sans-serif; color: var(--c); font-size: 16px; }
+  .m-name { font-family: 'Jua', sans-serif; font-size: 40px; line-height: 1.1; margin-top: 2px; }
+  .m-tag { font-family: 'Gaegu', cursive; font-size: 21px; color: var(--ink-soft); margin-top: 6px; }
+  .m-sec { margin-top: 20px; }
+  .m-sec h4 {
+    font-size: 12px; letter-spacing: .08em; color: var(--ink-soft); font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .m-sec p { font-size: 14.5px; line-height: 1.75; }
+  .quote {
+    margin-top: 22px; padding: 14px 16px;
+    background: #fff; border-left: 4px solid var(--c); border-radius: 0 8px 8px 0;
+    font-size: 15px; line-height: 1.6;
+  }
+
+  @media (max-width: 960px) {
+    .days { grid-template-columns: repeat(4, 1fr); }
+  }
+  @media (max-width: 640px) {
+    body { padding: 32px 14px 60px; }
+    .chart { padding: 28px 14px 18px; transform: none; }
+    .chart-head { flex-direction: column; gap: 4px; }
+    .days { grid-template-columns: repeat(2, 1fr); }
+    .notes { grid-template-columns: 1fr; }
+    .modal { grid-template-columns: 1fr; }
+    .m-info { padding: 22px 20px 24px; }
+    .m-name { font-size: 32px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="magnet-row" id="magnets"></div>
+    <h1>주 7일 근무</h1>
+    <p class="subtitle">쉬는 날이 제일 바쁜 집에 오신 걸 환영합니다</p>
+    <p class="intro">
+      요일들이 사람 모습으로 모여 사는 집. 일요일 <b>일라</b>는 여섯 요일의 엄마예요.<br>
+      쉬는 날을 맡았지만 한 번도 쉬어 본 적 없는 그녀가, 드디어 <b>관리인</b>을 들였습니다.<br>
+      오늘부터 이 집의 집안일은 당신과, 그날의 당번이 함께합니다.
+    </p>
+  </header>
+
+  <section class="chart">
+    <div class="chart-head">
+      <h2>이번 주 당번표</h2>
+      <p>칸을 누르면 자기소개를 해 줘요</p>
+    </div>
+    <div class="days" id="days"></div>
+  </section>
+
+  <section class="notes">
+    <div class="memo">
+      <span class="pin"></span>
+      <h3>관리인 수칙</h3>
+      <ol>
+        <li>그날 요일인 아이가 당번! 하루 종일 같이 집안일을 해요.</li>
+        <li>어제 당번은 녹초가 돼 있으니 깨우지 말 것.</li>
+        <li>내일 당번은 들떠 있거나 날이 서 있어요.</li>
+        <li>날짜가 바뀌면 당번도 바뀝니다.</li>
+      </ol>
+    </div>
+    <div class="memo blue">
+      <span class="pin"></span>
+      <h3>엄마의 메모</h3>
+      <ul>
+        <li>월이한테 월요일 얘기 금지</li>
+        <li>화조 꼭 챙겨 주세요. 자꾸 잊혀요</li>
+        <li>목요일에 금요일이라고 하지 마세요</li>
+        <li>저 쉬라고 하면... 노력은 해 볼게요</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="cta">
+    <a href="#" id="crack-link">대화 시작하기</a>
+    <p>크랙에서 만나요</p>
+  </div>
+
+</div>
+
+<div class="modal-bg" id="modal-bg">
+  <div class="modal" id="modal" role="dialog" aria-modal="true">
+    <button class="close" id="close" aria-label="닫기">×</button>
+    <div class="m-img">
+      <img class="main" id="m-main" alt="">
+      <div class="emotions" id="m-emotions"></div>
+    </div>
+    <div class="m-info">
+      <div class="m-day" id="m-day"></div>
+      <div class="m-name" id="m-name"></div>
+      <div class="m-tag" id="m-tag"></div>
+      <div class="m-sec"><h4>성격</h4><p id="m-pers"></p></div>
+      <div class="m-sec"><h4>당번 날에는</h4><p id="m-duty"></p></div>
+      <div class="m-sec"><h4>관리인을 부르는 말</h4><p id="m-call"></p></div>
+      <div class="quote" id="m-quote"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 크랙 링크는 나중에 여기에 넣으세요
+  const CRACK_URL = '#';
+
+  const IMG_BASE = 'https://tacowasabi123.github.io/crack_image_safe/images/요일/';
+  const RAW_BASE = 'https://raw.githubusercontent.com/tacowasabi123/crack_image_safe/main/images/요일/';
+  const EMOTIONS = ['미소', '기쁨', '화남', '슬픔', '당황', '부끄러움', '삐짐'];
+
+  // getDay() 순서: 0=일 ~ 6=토
+  const CAST = [
+    { day: '일', name: '일라', order: '엄마', color: '#F08A3C',
+      tag: '쉬는 날을 맡았지만 쉬어 본 적 없는 엄마',
+      pers: '따뜻하고 느긋하지만 늘 지쳐 있어요. 쉬는 법을 몰라서 쉬라고 하면 오히려 안절부절못해요. 화나면 눈 감고 웃는데, 그게 제일 무서워요. 일요일 저녁이면 내일 출근할 딸들 걱정에 시무룩해져요.',
+      duty: '쉬라고 있는 날인데 일주일 치 반찬과 대청소를 몰아서 해요. 누가 말려야 겨우 앉아요.',
+      call: '"{user} 씨" · 다정한 존댓말',
+      quote: '"오늘은 제 차례니까요. 반찬 열두 가지만 더 하면 끝나요!"' },
+    { day: '월', name: '월이', order: '첫째', color: '#8E9AAB',
+      tag: '모두에게 미움받는 걸 아는 까칠한 첫째',
+      pers: '늘 피곤하고 까칠해요. 다들 월요일을 싫어하는 걸 알아서 일부러 더 날을 세워요. 커피를 달고 살아요.',
+      duty: '한 주 시작 담당이라 장보기와 주간 일정표를 맡아요. 투덜대면서도 빈틈없이 해 놔요.',
+      call: '"관리인" · 퉁명스러운 반말',
+      quote: '"...뭘 봐. 장 볼 거 적어 놨으니까 그거나 봐."' },
+    { day: '화', name: '화조', order: '둘째', color: '#C0283A',
+      tag: '아까부터 여기 있었던 둘째',
+      pers: '성실하지만 존재감이 없어서 가족도 자주 잊어요. 조용히 할 일을 해 두고, 아무도 몰라주면 몰래 서운해해요.',
+      duty: '배수구, 창틀, 서랍처럼 아무도 안 챙기는 곳을 조용히 정리하고, 알아봐 주길 기다려요.',
+      call: '"관리인님" · 조심스러운 존댓말',
+      quote: '"저... 창틀 닦아 놨는데요. 아, 아니에요. 그냥 그렇다고요..."' },
+    { day: '수', name: '수아', order: '셋째', color: '#4FA9DE',
+      tag: '한 주의 반환점, 한숨 많은 셋째',
+      pers: '늘 한숨을 쉬는 중간 관리자 타입이에요. 투덜대면서도 동생들과 관리인을 제일 잘 챙기는 잔소리꾼이에요.',
+      duty: '반환점 점검. 냉장고 유통기한, 가계부, 밀린 빨래를 챙기느라 잔소리가 두 배가 돼요.',
+      call: '"{user} 씨" · 차분한 존댓말, 가끔 한숨',
+      quote: '"하아... 이거 유통기한 지났잖아요. 밥은 드셨어요?"' },
+    { day: '목', name: '목련', order: '넷째', color: '#5DB04C',
+      tag: '금요일 직전, 김칫국부터 마시는 넷째',
+      pers: '금요일 직전이라 늘 들떠 있고, 김칫국부터 마셔요. 금비를 부러워해요. 아직 목요일인 걸 깨달으면 크게 실망해요.',
+      duty: '내일 금요일 생각에 파티 장식부터 사 와요. 집안일은 자꾸 뒷전이 돼요.',
+      call: '"관리인!" · 텐션 높은 반말',
+      quote: '"관리인! 내일이면 금요일이야! ...어? 아직 목요일이라고?"' },
+    { day: '금', name: '금비', order: '다섯째', color: '#E0B53A',
+      tag: '모두가 기다리는 인기인 다섯째',
+      pers: '모두가 기다리는 인기인이고, 자기도 그걸 알아요. 파티와 약속이 많은 인싸지만 연애에는 의외로 순진해요.',
+      duty: '친구들을 불러 집에서 파티를 열고, 뒷정리는 관리인에게 슬쩍 떠넘기려 해요.',
+      call: '"{user}~" · 애교 섞인 반말',
+      quote: '"오늘 파티 있는 거 알지? 치우는 건~ 너랑 나랑 같이!"' },
+    { day: '토', name: '토리', order: '막내', color: '#9A6A42',
+      tag: '놀자는 말을 달고 사는 막내',
+      pers: '자유분방하고 활발한 톰보이예요. 놀자는 말을 달고 살고 집안일도 놀이로 만들어요. 월이를 자주 놀려요.',
+      duty: '집안일을 내기나 게임으로 바꿔요. 이불 털기, 마당 정리처럼 몸 쓰는 일을 좋아해요.',
+      call: '"야, {user}" · 털털한 반말',
+      quote: '"빨래 개기 시합 할래? 지는 사람이 아이스크림 사기!"' },
+  ];
+
+  const enc = s => encodeURIComponent(s);
+  const imgUrl = (name, emo) => IMG_BASE + enc(`${name}_${emo}.png`);
+  const rawUrl = (name, emo) => RAW_BASE + enc(`${name}_${emo}.png`);
+  function setImg(el, name, emo) {
+    el.onerror = () => { el.onerror = null; el.src = rawUrl(name, emo); };
+    el.src = imgUrl(name, emo);
+    el.alt = `${name} ${emo}`;
+  }
+
+  // 자석
+  const magnets = document.getElementById('magnets');
+  CAST.forEach(c => {
+    const s = document.createElement('span');
+    s.textContent = c.day;
+    s.style.background = c.color;
+    magnets.appendChild(s);
+  });
+
+  // 당번표
+  const today = new Date().getDay();
+  const daysEl = document.getElementById('days');
+  CAST.forEach((c, i) => {
+    const b = document.createElement('button');
+    b.className = 'day' + (i === today ? ' today' : '');
+    b.style.setProperty('--c', c.color);
+    b.innerHTML = `
+      <div class="day-top"><span class="d">${c.day}</span><span class="o">${c.order}</span></div>
+      <span class="today-badge">오늘의 당번!</span>
+      <div class="thumb"><img loading="lazy"></div>
+      <div class="day-body"><div class="n">${c.name}</div><div class="t">${c.tag}</div></div>`;
+    setImg(b.querySelector('img'), c.name, '미소');
+    b.addEventListener('click', () => openModal(c));
+    daysEl.appendChild(b);
+  });
+
+  // 팝업
+  const bg = document.getElementById('modal-bg');
+  const modal = document.getElementById('modal');
+  const mMain = document.getElementById('m-main');
+  const mEmo = document.getElementById('m-emotions');
+  const u = s => s.replaceAll('{user}', '관리인');
+
+  function openModal(c) {
+    modal.style.setProperty('--c', c.color);
+    document.getElementById('m-day').textContent = `${c.day}요일 · ${c.order}`;
+    document.getElementById('m-name').textContent = c.name;
+    document.getElementById('m-tag').textContent = c.tag;
+    document.getElementById('m-pers').textContent = c.pers;
+    document.getElementById('m-duty').textContent = c.duty;
+    document.getElementById('m-call').textContent = u(c.call);
+    document.getElementById('m-quote').textContent = c.quote;
+    setImg(mMain, c.name, '미소');
+    mEmo.innerHTML = '';
+    EMOTIONS.forEach((e, idx) => {
+      const btn = document.createElement('button');
+      btn.textContent = e;
+      if (idx === 0) btn.className = 'on';
+      btn.addEventListener('click', () => {
+        mEmo.querySelectorAll('button').forEach(x => x.classList.remove('on'));
+        btn.classList.add('on');
+        setImg(mMain, c.name, e);
+      });
+      mEmo.appendChild(btn);
+    });
+    bg.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    bg.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('close').addEventListener('click', closeModal);
+  bg.addEventListener('click', e => { if (e.target === bg) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  // 크랙 링크
+  const link = document.getElementById('crack-link');
+  link.href = CRACK_URL;
+  if (CRACK_URL === '#') link.addEventListener('click', e => e.preventDefault());
+</script>
+</body>
+</html>
