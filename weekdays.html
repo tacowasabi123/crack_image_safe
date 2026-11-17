@@ -194,6 +194,7 @@
     margin-bottom: 6px;
   }
   .m-sec p { font-size: 14.5px; line-height: 1.75; }
+  .m-sec.two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   .quote {
     margin-top: 22px; padding: 14px 16px;
     background: #fff; border-left: 4px solid var(--c); border-radius: 0 8px 8px 0;
@@ -212,6 +213,7 @@
     .modal { grid-template-columns: 1fr; }
     .m-info { padding: 22px 20px 24px; }
     .m-name { font-size: 32px; }
+    .m-sec.two { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -246,6 +248,7 @@
         <li>어제 당번은 녹초가 돼 있으니 깨우지 말 것.</li>
         <li>내일 당번은 들떠 있거나 날이 서 있어요.</li>
         <li>날짜가 바뀌면 당번도 바뀝니다.</li>
+        <li>첫째, 막내는 편의상 순서일 뿐! 누가 언니인지는 각자 마음대로예요.</li>
       </ol>
     </div>
     <div class="memo blue">
@@ -279,8 +282,12 @@
       <div class="m-name" id="m-name"></div>
       <div class="m-tag" id="m-tag"></div>
       <div class="m-sec"><h4>성격</h4><p id="m-pers"></p></div>
+      <div class="m-sec"><h4>요일로서 하는 일</h4><p id="m-work"></p></div>
       <div class="m-sec"><h4>당번 날에는</h4><p id="m-duty"></p></div>
-      <div class="m-sec"><h4>관리인을 부르는 말</h4><p id="m-call"></p></div>
+      <div class="m-sec two">
+        <div><h4>관리인을 부르는 말</h4><p id="m-call"></p></div>
+        <div><h4>자매를 부르는 말</h4><p id="m-sis"></p></div>
+      </div>
       <div class="quote" id="m-quote"></div>
     </div>
   </div>
@@ -299,44 +306,58 @@
     { day: '일', name: '일라', order: '엄마', color: '#F08A3C',
       tag: '쉬는 날을 맡았지만 쉬어 본 적 없는 엄마',
       pers: '따뜻하고 느긋하지만 늘 지쳐 있어요. 쉬는 법을 몰라서 쉬라고 하면 오히려 안절부절못해요. 화나면 눈 감고 웃는데, 그게 제일 무서워요. 일요일 저녁이면 내일 출근할 딸들 걱정에 시무룩해져요.',
+      work: '세상에 휴식을 나눠 줘요. 다 나눠 주고 나면 정작 자기 몫은 남지 않아요.',
       duty: '쉬라고 있는 날인데 일주일 치 반찬과 대청소를 몰아서 해요. 누가 말려야 겨우 앉아요.',
-      call: '"{user} 씨" · 다정한 존댓말',
+      callUser: '"관리인 씨" · 다정한 존댓말',
+      callSis: '딸들은 이름으로 불러요.',
       quote: '"오늘은 제 차례니까요. 반찬 열두 가지만 더 하면 끝나요!"' },
     { day: '월', name: '월이', order: '첫째', color: '#8E9AAB',
       tag: '모두에게 미움받는 걸 아는 까칠한 첫째',
       pers: '늘 피곤하고 까칠해요. 다들 월요일을 싫어하는 걸 알아서 일부러 더 날을 세워요. 커피를 달고 살아요.',
-      duty: '한 주 시작 담당이라 장보기와 주간 일정표를 맡아요. 투덜대면서도 빈틈없이 해 놔요.',
-      call: '"관리인" · 퉁명스러운 반말',
+      work: '멈춰 있던 세상을 다시 굴려요. 사람들을 깨우느라 원망을 혼자 다 받아요.',
+      duty: '장보기와 주간 일정표를 맡아요. 투덜대면서도 빈틈없이 해 놔요.',
+      callUser: '"관리인" · 퉁명스러운 반말',
+      callSis: '첫째답게 동생들은 전부 이름으로 불러요.',
       quote: '"...뭘 봐. 장 볼 거 적어 놨으니까 그거나 봐."' },
     { day: '화', name: '화조', order: '둘째', color: '#C0283A',
       tag: '아까부터 여기 있었던 둘째',
       pers: '성실하지만 존재감이 없어서 가족도 자주 잊어요. 조용히 할 일을 해 두고, 아무도 몰라주면 몰래 서운해해요.',
+      work: '월요일이 벌여 놓은 일을 실제로 굴러가게 해요. 제일 많이 일하고, 제일 빨리 잊혀요.',
       duty: '배수구, 창틀, 서랍처럼 아무도 안 챙기는 곳을 조용히 정리하고, 알아봐 주길 기다려요.',
-      call: '"관리인님" · 조심스러운 존댓말',
+      callUser: '"관리인님" · 조심스러운 존댓말',
+      callSis: '동생들한테도 존댓말을 써요.',
       quote: '"저... 창틀 닦아 놨는데요. 아, 아니에요. 그냥 그렇다고요..."' },
     { day: '수', name: '수아', order: '셋째', color: '#4FA9DE',
       tag: '한 주의 반환점, 한숨 많은 셋째',
-      pers: '늘 한숨을 쉬는 중간 관리자 타입이에요. 투덜대면서도 동생들과 관리인을 제일 잘 챙기는 잔소리꾼이에요.',
-      duty: '반환점 점검. 냉장고 유통기한, 가계부, 밀린 빨래를 챙기느라 잔소리가 두 배가 돼요.',
-      call: '"{user} 씨" · 차분한 존댓말, 가끔 한숨',
+      pers: '한숨이 많은 중간 관리자 타입이에요. 투덜대면서도 가족과 관리인을 제일 잘 챙기는 잔소리꾼이에요.',
+      work: '지친 사람들이 한 주의 반을 넘길 수 있도록 버틸 힘을 나눠 줘요.',
+      duty: '냉장고 유통기한, 가계부, 밀린 빨래를 점검하느라 잔소리가 두 배가 돼요.',
+      callUser: '"관리인 씨" · 차분한 존댓말, 가끔 한숨',
+      callSis: '월이·화조는 언니, 동생들한테는 반말해요.',
       quote: '"하아... 이거 유통기한 지났잖아요. 밥은 드셨어요?"' },
     { day: '목', name: '목련', order: '넷째', color: '#5DB04C',
       tag: '금요일 직전, 김칫국부터 마시는 넷째',
-      pers: '금요일 직전이라 늘 들떠 있고, 김칫국부터 마셔요. 금비를 부러워해요. 아직 목요일인 걸 깨달으면 크게 실망해요.',
+      pers: '늘 들떠 있고, 김칫국부터 마셔요. 금비를 부러워해요. 아직 목요일인 걸 깨달으면 크게 실망해요.',
+      work: '사람들 마음에 \'조금만 더\'라는 기대를 심어요. 그 기대를 누리는 건 정작 금비지만요.',
       duty: '내일 금요일 생각에 파티 장식부터 사 와요. 집안일은 자꾸 뒷전이 돼요.',
-      call: '"관리인!" · 텐션 높은 반말',
-      quote: '"관리인! 내일이면 금요일이야! ...어? 아직 목요일이라고?"' },
+      callUser: '"오빠!" / "언니!" · 텐션 높은 반말',
+      callSis: '금비만 "금비 언니"라고 부르며 따라다녀요. 나머지는 반말.',
+      quote: '"내일이면 금요일이야! ...어? 아직 목요일이라고?"' },
     { day: '금', name: '금비', order: '다섯째', color: '#E0B53A',
       tag: '모두가 기다리는 인기인 다섯째',
       pers: '모두가 기다리는 인기인이고, 자기도 그걸 알아요. 파티와 약속이 많은 인싸지만 연애에는 의외로 순진해요.',
+      work: '퇴근의 해방감과 저녁 약속을 나눠 줘요. 일주일 중 가장 사랑받는 요일이에요.',
       duty: '친구들을 불러 집에서 파티를 열고, 뒷정리는 관리인에게 슬쩍 떠넘기려 해요.',
-      call: '"{user}~" · 애교 섞인 반말',
+      callUser: '"오빠~" / "언니~" · 애교 섞인 반말',
+      callSis: '언니 동생 따지지 않고 전부 이름으로 불러요.',
       quote: '"오늘 파티 있는 거 알지? 치우는 건~ 너랑 나랑 같이!"' },
     { day: '토', name: '토리', order: '막내', color: '#9A6A42',
       tag: '놀자는 말을 달고 사는 막내',
-      pers: '자유분방하고 활발한 톰보이예요. 놀자는 말을 달고 살고 집안일도 놀이로 만들어요. 월이를 자주 놀려요.',
+      pers: '자유분방하고 활발한 톰보이예요. 놀자는 말을 달고 살고, 집안일도 놀이로 만들어요.',
+      work: '늦잠과 나들이, 놀 시간을 나눠 줘요. 세상이 제일 신나는 날이라 본인도 제일 신났어요.',
       duty: '집안일을 내기나 게임으로 바꿔요. 이불 털기, 마당 정리처럼 몸 쓰는 일을 좋아해요.',
-      call: '"야, {user}" · 털털한 반말',
+      callUser: '"야, 관리인" · 털털한 반말',
+      callSis: '막내지만 전부 반말. 월이는 "월요병"이라고 놀려요.',
       quote: '"빨래 개기 시합 할래? 지는 사람이 아이스크림 사기!"' },
   ];
 
@@ -380,7 +401,6 @@
   const modal = document.getElementById('modal');
   const mMain = document.getElementById('m-main');
   const mEmo = document.getElementById('m-emotions');
-  const u = s => s.replaceAll('{user}', '관리인');
 
   function openModal(c) {
     modal.style.setProperty('--c', c.color);
@@ -389,7 +409,9 @@
     document.getElementById('m-tag').textContent = c.tag;
     document.getElementById('m-pers').textContent = c.pers;
     document.getElementById('m-duty').textContent = c.duty;
-    document.getElementById('m-call').textContent = u(c.call);
+    document.getElementById('m-work').textContent = c.work;
+    document.getElementById('m-call').textContent = c.callUser;
+    document.getElementById('m-sis').textContent = c.callSis;
     document.getElementById('m-quote').textContent = c.quote;
     setImg(mMain, c.name, '미소');
     mEmo.innerHTML = '';
