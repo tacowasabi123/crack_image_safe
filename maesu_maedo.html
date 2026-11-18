@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>크랙증권 AI 투자 비서 베타 테스트 | 마이수 & 마이도</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  /* ===== 여기만 바꾸면 됩니다 ===== */
+  :root{
+    --bg:#EDF0F4;      /* 앱 배경 */
+    --paper:#FFFFFF;   /* 카드 */
+    --ink:#1A2130;     /* 본문 */
+    --sub:#7D879A;     /* 보조 글자 */
+    --line:#DCE1E8;    /* 구분선 */
+    --up:#E5334B;      /* 상승·매수·마이수 */
+    --down:#2C66F0;    /* 하락·매도·마이도 */
+    --up-soft:#FDECEF;
+    --down-soft:#EAF0FE;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Pretendard Variable",Pretendard,system-ui,sans-serif;background:var(--bg);color:var(--ink);
+       line-height:1.6;font-feature-settings:"tnum";word-break:keep-all;overflow-wrap:break-word;-webkit-font-smoothing:antialiased}
+  img{display:block;max-width:100%}
+  button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+  a{color:inherit}
+  :focus-visible{outline:3px solid var(--ink);outline-offset:3px;border-radius:6px}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+  .up{color:var(--up)} .down{color:var(--down)}
+
+  /* 상단 바 */
+  .topbar{position:sticky;top:0;z-index:20;background:rgba(237,240,244,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:56px}
+  .brand{font-weight:800;font-size:17px;letter-spacing:-.02em;display:flex;gap:8px;align-items:center}
+  .brand i{width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,var(--up) 50%,var(--down) 50%);display:inline-block}
+  .topbar nav{display:flex;gap:20px;font-size:14px;color:var(--sub)}
+  .topbar nav a{text-decoration:none}
+  .topbar nav a:hover{color:var(--ink)}
+  @media(max-width:700px){.topbar nav{display:none}}
+
+  /* 티커 */
+  .ticker{background:var(--ink);color:#fff;overflow:hidden;white-space:nowrap;font-size:13.5px}
+  .ticker-track{display:inline-flex;gap:36px;padding:9px 0;animation:tick 40s linear infinite}
+  .ticker b{font-weight:600;margin-right:6px}
+  .ticker .up{color:#FF7A8C} .ticker .down{color:#7FA6FF}
+  @keyframes tick{to{transform:translateX(-50%)}}
+
+  /* 히어로 */
+  .hero{padding:56px 0 64px}
+  .hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+  .hero h1{font-size:clamp(32px,4.8vw,54px);line-height:1.12;letter-spacing:-.045em;font-weight:850;margin-bottom:18px}
+  .hero h1 .sell{display:block;color:var(--down)}
+  .hero h1 .buy{display:block;color:var(--up)}
+  .hero p.lead{font-size:17px;color:#4A5468;max-width:30em;margin-bottom:28px}
+  .noti{background:var(--paper);border-radius:18px;padding:16px 18px;box-shadow:0 12px 30px -12px rgba(26,33,48,.25);max-width:420px;border:1px solid var(--line)}
+  .noti-head{display:flex;justify-content:space-between;font-size:12.5px;color:var(--sub);margin-bottom:6px}
+  .noti-head span:first-child{font-weight:700;color:var(--ink)}
+  .noti p{font-size:15px;font-weight:600;line-height:1.5;margin-bottom:14px}
+  .noti-btns{display:flex;gap:8px}
+  .btn{flex:1;padding:12px 0;border-radius:10px;font-weight:700;font-size:15px;text-align:center;text-decoration:none;transition:transform .12s}
+  .btn:active{transform:scale(.97)}
+  .btn-yes{background:var(--ink);color:#fff}
+  .btn-no{background:var(--bg);color:var(--sub)}
+  .btn-no.shake{animation:shake .4s}
+  @keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+  .noti-reply{font-size:13.5px;color:var(--down);margin-top:10px;min-height:1.4em;font-weight:600}
+  .cover{position:relative;border-radius:22px;overflow:hidden;aspect-ratio:832/1216;max-height:620px;justify-self:center;
+         box-shadow:0 30px 60px -30px rgba(26,33,48,.5);background:linear-gradient(135deg,var(--up-soft),var(--down-soft))}
+  .cover img{width:100%;height:100%;object-fit:cover}
+  .cover .stamp{position:absolute;left:14px;bottom:14px;background:rgba(255,255,255,.92);border-radius:10px;padding:8px 12px;font-size:13px;font-weight:700}
+  @media(max-width:860px){.hero .wrap{grid-template-columns:1fr}.cover{max-height:520px;width:100%;max-width:360px}}
+
+  /* 섹션 공통 */
+  section.block{padding:64px 0}
+  .block h2{font-size:clamp(26px,3.4vw,36px);letter-spacing:-.035em;font-weight:800;line-height:1.25;margin-bottom:10px}
+  .block .desc{color:#4A5468;max-width:36em;margin-bottom:32px}
+
+  /* 호가창 (두 캐릭터) */
+  .book{display:grid;grid-template-columns:1fr 1fr;background:var(--paper);border-radius:22px;overflow:hidden;border:1px solid var(--line)}
+  .side{padding:28px 26px 30px;position:relative}
+  .side.buy{background:linear-gradient(180deg,var(--up-soft),#fff 60%)}
+  .side.sell{background:linear-gradient(180deg,var(--down-soft),#fff 60%);border-left:1px solid var(--line)}
+  .side-label{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:18px}
+  .side-label strong{font-size:15px;font-weight:800}
+  .side-label small{font-size:13px;color:var(--sub)}
+  .portrait{width:100%;aspect-ratio:1216/832;border-radius:14px;overflow:hidden;margin-bottom:18px;background:#fff;position:relative}
+  .portrait img{width:100%;height:100%;object-fit:cover;transition:transform .35s}
+  .portrait:hover img{transform:scale(1.03)}
+  .portrait .hint{position:absolute;right:10px;bottom:10px;background:rgba(26,33,48,.78);color:#fff;font-size:12px;padding:4px 9px;border-radius:999px}
+  .name{font-size:34px;font-weight:850;letter-spacing:-.04em;line-height:1.1}
+  .buy .name{color:var(--up)} .sell .name{color:var(--down)}
+  .quote{font-size:17px;font-weight:600;margin:10px 0 16px}
+  .facts{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14.5px}
+  .facts dt{color:var(--sub)}
+  @media(max-width:760px){.book{grid-template-columns:1fr}.side.sell{border-left:0;border-top:1px solid var(--line)}}
+  .fight{margin-top:18px;background:var(--ink);color:#fff;border-radius:16px;padding:18px 22px;display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center;font-weight:600}
+  .fight .vs{font-weight:850;color:#8F98AA}
+  .fight .r{text-align:right}
+  .fight .u{color:#FF7A8C}.fight .d{color:#7FA6FF}
+  @media(max-width:600px){.fight{grid-template-columns:1fr;text-align:left}.fight .r{text-align:left}.fight .vs{display:none}}
+
+  /* 계좌 진단서 */
+  .account{display:grid;grid-template-columns:.9fr 1.1fr;gap:20px}
+  .card{background:var(--paper);border-radius:18px;border:1px solid var(--line);padding:24px}
+  .total small{color:var(--sub);font-size:14px}
+  .total .big{font-size:clamp(40px,6vw,60px);font-weight:850;letter-spacing:-.04em;line-height:1.1;color:var(--down);margin:4px 0}
+  .total .diff{font-weight:700;color:var(--down)}
+  .total .bar{height:10px;background:var(--bg);border-radius:99px;margin:22px 0 8px;overflow:hidden}
+  .total .bar i{display:block;height:100%;width:30%;background:var(--down);border-radius:99px}
+  .total .bar-cap{display:flex;justify-content:space-between;font-size:13px;color:var(--sub)}
+  table{width:100%;border-collapse:collapse;font-size:14.5px}
+  th{font-weight:600;color:var(--sub);text-align:right;padding:0 0 10px;font-size:13px}
+  th:first-child,td:first-child{text-align:left}
+  td{padding:12px 0;border-top:1px solid var(--line);text-align:right}
+  td b{font-weight:700}
+  .comment{margin-top:16px;font-size:14px;background:var(--down-soft);border-radius:12px;padding:12px 14px}
+  .comment.u{background:var(--up-soft)}
+  .comment strong{font-weight:800}
+  @media(max-width:760px){.account{grid-template-columns:1fr}}
+
+  /* 하루 흐름 */
+  .day{display:grid;grid-template-columns:repeat(3,1fr);gap:0;background:var(--paper);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+  .day > div{padding:22px 22px 24px}
+  .day > div + div{border-left:1px solid var(--line)}
+  .day time{font-size:26px;font-weight:850;letter-spacing:-.03em;display:block;margin-bottom:6px}
+  .day h3{font-size:16px;font-weight:700;margin-bottom:6px}
+  .day p{font-size:14.5px;color:#4A5468}
+  @media(max-width:760px){.day{grid-template-columns:1fr}.day > div + div{border-left:0;border-top:1px solid var(--line)}}
+  .skip{margin-top:14px;font-size:14.5px;color:#4A5468}
+  .skip code{font-family:inherit;background:var(--paper);border:1px solid var(--line);border-radius:7px;padding:2px 8px;font-weight:600;color:var(--ink);margin:0 2px;white-space:nowrap}
+
+  .year{margin-top:28px;display:grid;grid-template-columns:repeat(12,1fr);gap:4px}
+  .m{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:10px 6px;min-height:92px;font-size:12px}
+  .m b{display:block;font-size:13px;margin-bottom:4px}
+  .m span{display:block;color:#4A5468;line-height:1.35}
+  .m.hot{border-color:var(--ink)}
+  @media(max-width:860px){.year{grid-template-columns:repeat(6,1fr)}}
+  @media(max-width:480px){.year{grid-template-columns:repeat(3,1fr)}}
+
+  /* 종목 */
+  .board{background:var(--paper);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+  .row{display:grid;grid-template-columns:1.1fr 1.6fr 1fr 70px;gap:12px;align-items:center;padding:14px 22px;font-size:14.5px}
+  .row + .row{border-top:1px solid var(--line)}
+  .row.head{font-size:13px;color:var(--sub);padding-top:16px;padding-bottom:12px}
+  .row .tk{font-weight:750}
+  .row .what{color:#4A5468}
+  .vol{display:flex;gap:3px}
+  .vol i{width:14px;height:8px;border-radius:2px;background:var(--line)}
+  .vol i.on{background:var(--ink)}
+  .fan{font-size:12.5px;font-weight:700;text-align:right;white-space:nowrap}
+  .fan .up,.fan .down{display:inline-block;border-radius:99px;padding:2px 8px}
+  .fan .up{background:var(--up-soft)} .fan .down{background:var(--down-soft)}
+  .row.fake{background:repeating-linear-gradient(-45deg,#fff 0 10px,#FAFBFC 10px 20px)}
+  @media(max-width:640px){.row{grid-template-columns:1fr auto;}.row .what{grid-column:1/-1;order:3}.row.head{display:none}.vol{justify-self:end}.fan{grid-column:1/-1;text-align:left;order:4}}
+  .note{font-size:13.5px;color:var(--sub);margin-top:12px}
+
+  /* 마지막 */
+  .final{padding:72px 0 96px;text-align:center}
+  .final h2{font-size:clamp(28px,4vw,42px);letter-spacing:-.04em;font-weight:850;line-height:1.2;margin-bottom:14px}
+  .final p{color:#4A5468;margin-bottom:28px}
+  .final .actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .final .btn{flex:none;padding:15px 28px;font-size:16px}
+  .btn-line{background:var(--paper);border:1px solid var(--line)}
+  footer{border-top:1px solid var(--line);padding:22px 0 40px;font-size:12.5px;color:var(--sub)}
+
+  /* 팝업 */
+  .modal{position:fixed;inset:0;z-index:50;background:rgba(26,33,48,.55);display:none;align-items:center;justify-content:center;padding:20px}
+  .modal.open{display:flex}
+  .sheet{background:var(--paper);border-radius:22px;max-width:640px;width:100%;max-height:90vh;overflow:auto;position:relative}
+  .sheet .portrait{border-radius:0;margin:0}
+  .sheet-body{padding:24px 26px 28px}
+  .sheet .close{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.92);font-size:20px;font-weight:700;z-index:2}
+  .sheet h3{font-size:30px;font-weight:850;letter-spacing:-.04em}
+  .sheet .tag{font-size:14px;color:var(--sub);margin-bottom:16px}
+  .sheet dl{display:grid;grid-template-columns:88px 1fr;gap:10px 14px;font-size:15px}
+  .sheet dt{color:var(--sub)}
+  .lines{margin-top:18px;display:grid;gap:8px}
+  .lines p{background:var(--bg);border-radius:12px;padding:10px 14px;font-size:14.5px}
+
+  .ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--sub);font-size:14px;text-align:center;padding:10px}
+
+  @media (prefers-reduced-motion: reduce){.ticker-track{animation:none}*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand"><i aria-hidden="true"></i>크랙증권</div>
+    <nav aria-label="페이지 이동">
+      <a href="#assistants">투자 비서</a>
+      <a href="#account">내 계좌</a>
+      <a href="#rules">진행 방식</a>
+      <a href="#stocks">종목</a>
+    </nav>
+  </div>
+</header>
+
+<div class="ticker" aria-hidden="true"><div class="ticker-track" id="ticker"></div></div>
+
+<main>
+  <!-- 히어로 -->
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <h1><span class="sell">허접 개미의 계좌를</span><span class="buy">1년 안에 살려 드립니다</span></h1>
+        <p class="lead">수익률 하위 1% 고객님께 크랙증권이 시험 제작한 투자 비서 안드로이드 두 명을 보내 드립니다. 하나는 사라고 하고, 하나는 팔라고 합니다.</p>
+        <div class="noti" role="group" aria-label="크랙증권 알림">
+          <div class="noti-head"><span>크랙증권</span><span>방금</span></div>
+          <p>수익률 개선 프로젝트 'AI 투자 비서 베타 테스트'에 참여하시겠습니까?</p>
+          <div class="noti-btns">
+            <a class="btn btn-yes" id="agree" href="#">동의</a>
+            <button class="btn btn-no" id="decline" type="button">거절</button>
+          </div>
+          <p class="noti-reply" id="reply" aria-live="polite"></p>
+        </div>
+      </div>
+      <figure class="cover">
+        <img data-src="cover" alt="마이수와 마이도가 나란히 서서 내려다보는 표지">
+        <figcaption class="stamp">테스트 기간 365일</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 두 사람 -->
+  <section class="block" id="assistants">
+    <div class="wrap">
+      <h2>사라는 쪽과 팔라는 쪽</h2>
+      <p class="desc">같은 날 만들어진 A형과 B형. 목표는 같지만 매수·매도 타이밍은 단 한 번도 맞은 적이 없습니다. 사진을 누르면 자세한 소개를 볼 수 있습니다.</p>
+
+      <div class="book">
+        <article class="side buy">
+          <div class="side-label"><strong class="up">매수</strong><small>A형</small></div>
+          <button class="portrait" data-open="su" aria-label="마이수 소개 열기"><img data-src="su" alt="손을 흔들며 인사하는 마이수"><span class="hint">소개 보기</span></button>
+          <p class="name">마이수</p>
+          <p class="quote">"떨어졌다고? 그럼 더 싸게 살 기회잖아♡"</p>
+          <dl class="facts">
+            <dt>성격</dt><dd>근거는 감과 분위기인 하이텐션 낙관론자</dd>
+            <dt>좋아하는 것</dt><dd>레버리지, 테마주, 엠비디아, 떡상테크</dd>
+            <dt>입버릇</dt><dd>가즈아, 이건 조정이야</dd>
+          </dl>
+        </article>
+        <article class="side sell">
+          <div class="side-label"><strong class="down">매도</strong><small>B형</small></div>
+          <button class="portrait" data-open="do" aria-label="마이도 소개 열기"><img data-src="do" alt="안경을 밀어 올리며 내려다보는 마이도"><span class="hint">소개 보기</span></button>
+          <p class="name">마이도</p>
+          <p class="quote">"이걸 여태 들고 있었어? 허접~ 허접 개미~"</p>
+          <dl class="facts">
+            <dt>성격</dt><dd>확률을 소수점까지 읊는 냉소적인 리스크 관리형</dd>
+            <dt>좋아하는 것</dt><dd>인버스, 농신 같은 방어주, 칼손절</dd>
+            <dt>입버릇</dt><dd>거봐, 내가 뭐랬어?</dd>
+          </dl>
+        </article>
+      </div>
+
+      <div class="fight" role="note" aria-label="두 사람의 의견 예시">
+        <span class="u">"지금이 물타기 타이밍이야!"</span>
+        <span class="vs">떡상테크 -70%</span>
+        <span class="d r">"그러다 상장폐지 맞으면 같이 묻힐래?"</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 계좌 -->
+  <section class="block" id="account">
+    <div class="wrap">
+      <h2>고객님의 현재 계좌</h2>
+      <p class="desc">두 사람이 상자에서 깨어나 가장 먼저 확인한 화면입니다. 목표 금액은 첫날 아침, 고객님이 직접 정합니다.</p>
+      <div class="account">
+        <div class="card total">
+          <small>총자산</small>
+          <p class="big">300만 원</p>
+          <p class="diff">원금 1,000만 원 대비 -70.0%</p>
+          <div class="bar" role="img" aria-label="원금의 30% 남음"><i></i></div>
+          <div class="bar-cap"><span>남은 돈 30%</span><span>원금 회복까지 +233%</span></div>
+          <p class="comment"><strong>마이도</strong> 원금 보전만 해도 다행이라고 생각하려나~</p>
+          <p class="comment u"><strong>마이수</strong> 무슨 소리야, 더 크게 가자!</p>
+        </div>
+        <div class="card">
+          <table>
+            <thead><tr><th>보유 종목</th><th>수량</th><th>평단</th><th>현재가</th><th>수익률</th></tr></thead>
+            <tbody>
+              <tr><td><b>떡상테크</b></td><td>1,500주</td><td>4,800</td><td>1,440</td><td class="down"><b>-70.0%</b></td></tr>
+              <tr><td><b>알테오진</b></td><td>200주</td><td>14,000</td><td>4,200</td><td class="down"><b>-70.0%</b></td></tr>
+              <tr><td>예수금</td><td></td><td></td><td>0원</td><td></td></tr>
+            </tbody>
+          </table>
+          <p class="note">떡상테크는 거래량 급감에 작전 루머까지 돌고 있고, 알테오진은 다음 달 임상 결과 발표를 앞두고 있습니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 진행 방식 -->
+  <section class="block" id="rules">
+    <div class="wrap">
+      <h2>하루는 이렇게 흘러갑니다</h2>
+      <p class="desc">매매 결정은 언제나 고객님 몫입니다. 두 사람은 옆에서 조언하고, 싸우고, 결과에 따라 놀리거나 기죽을 뿐입니다.</p>
+      <div class="day">
+        <div><time>08:30</time><h3>장 전 브리핑</h3><p>오늘의 뉴스 한두 개와 정반대인 두 사람의 의견을 듣습니다.</p></div>
+        <div><time>09:00</time><h3>장 시작</h3><p>시세가 움직이고 이벤트가 터집니다. 사거나 팔거나, 버팁니다.</p></div>
+        <div><time>15:30</time><h3>장 마감</h3><p>오늘의 손익을 정산합니다. 주말과 휴장일에는 집에서의 일상이 이어집니다.</p></div>
+      </div>
+      <p class="skip">시간은 <code>다음 날</code> <code>일주일 넘겨</code> <code>한 달 넘겨</code>처럼 말하면 그동안의 등락을 요약해서 넘어갑니다.</p>
+
+      <div class="year" aria-label="1년 동안의 주요 이벤트">
+        <div class="m"><b>1월</b><span>1월 효과</span></div>
+        <div class="m hot"><b>2월</b><span>설 연휴 휴장</span></div>
+        <div class="m"><b>3월</b><span>1분기 마감</span></div>
+        <div class="m"><b>4월</b><span>실적 시즌, 벚꽃</span></div>
+        <div class="m"><b>5월</b><span>월간 점검</span></div>
+        <div class="m"><b>6월</b><span>금리 발표</span></div>
+        <div class="m"><b>7월</b><span>실적 시즌</span></div>
+        <div class="m hot"><b>8월</b><span>여름 휴가</span></div>
+        <div class="m hot"><b>9월</b><span>추석 연휴 휴장</span></div>
+        <div class="m"><b>10월</b><span>실적 시즌</span></div>
+        <div class="m"><b>11월</b><span>테마 급등락</span></div>
+        <div class="m hot"><b>12월</b><span>산타랠리, 1년 결산</span></div>
+      </div>
+      <p class="note">매월 말에는 크랙증권 정기 점검이 있습니다. 둘이 왜 그렇게 긴장하는지는 아직 아무도 말해 주지 않았습니다.</p>
+    </div>
+  </section>
+
+  <!-- 종목 -->
+  <section class="block" id="stocks">
+    <div class="wrap">
+      <h2>거래할 수 있는 종목</h2>
+      <p class="desc">기본 종목 외에도 원하는 종목 이름을 말하면 시장에 추가됩니다. 시세와 뉴스는 모두 이야기 속 가상입니다.</p>
+      <div class="board" role="table" aria-label="종목 목록">
+        <div class="row head" role="row"><span role="columnheader">종목</span><span role="columnheader">특징</span><span role="columnheader">변동성</span><span role="columnheader" class="fan">취향</span></div>
+        <div id="stockRows"></div>
+      </div>
+      <p class="note">실제 투자 정보가 아닙니다. 종목 이름은 실존 기업에서 한 글자씩 비튼 패러디이며, 떡상테크는 완전히 지어낸 종목입니다.</p>
+    </div>
+  </section>
+
+  <section class="final">
+    <div class="wrap">
+      <h2>오전 9시, 장이 열립니다</h2>
+      <p>목표 금액을 정하고, 두 사람 중 누구 말을 들을지 고르세요.</p>
+      <div class="actions">
+        <a class="btn btn-yes" id="start" href="#">이야기 시작하기</a>
+        <a class="btn btn-line" id="gallery" href="#">이미지 갤러리</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer><div class="wrap">크랙증권은 크랙 스토리 속 가상의 회사입니다. 이 페이지의 종목, 시세, 수익률은 모두 지어낸 것입니다.</div></footer>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mName">
+  <div class="sheet">
+    <button class="close" id="mClose" aria-label="닫기">×</button>
+    <div class="portrait" id="mImg"></div>
+    <div class="sheet-body">
+      <h3 id="mName"></h3>
+      <p class="tag" id="mTag"></p>
+      <dl id="mInfo"></dl>
+      <div class="lines" id="mLines"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== 링크와 이미지 경로: 여기만 바꾸면 됩니다 ===== */
+const CONFIG = {
+  crackUrl:   "#",   // 크랙 스토리 주소
+  galleryUrl: "#",   // 이미지 갤러리 주소
+  // 깃허브 페이지 주소 + 폴더 (crack_image_safe 레포의 images/주식)
+  imageBase: "https://tacowasabi123.github.io/crack_image_safe/images/주식/",
+  images: {
+    cover: "표지.png",            // ← 표지 파일 이름으로 바꾸기
+    su:    "마이수_인사.png",
+    do:    "마이도_자신만만.png",
+    suPop: "마이수_자신만만.png",
+    doPop: "마이도_비웃음.png",
+  }};
+
+const STOCKS = [
+  ["사성전자","대형 반도체, 국민주",1,"do"],
+  ["SK하이닉수","메모리 반도체",2,""],
+  ["엠비디아","미국 AI 반도체",4,"su"],
+  ["테슬나","미국 전기차",4,"su"],
+  ["농신","라면, 경기 방어주",1,"do"],
+  ["한화오선","조선, 수주 뉴스에 반응",3,""],
+  ["하이부","엔터, 컴백과 스캔들",3,""],
+  ["알테오진","바이오, 임상 결과로 급등락",5,""],
+  ["떡상테크","정체불명 동전주, 작전 루머",5,"su",true],
+  ["크스피 레버리지","지수 2배로 움직임",4,"su"],
+  ["크스피 인버스","지수와 반대로 움직임",2,"do"],
+];
+const TICK = [["사성전자","78,400","+1.2%"],["엠비디아","241,300","+3.8%"],["떡상테크","1,440","-12.4%"],
+  ["농신","412,000","+0.3%"],["테슬나","503,200","-2.1%"],["알테오진","4,200","-4.6%"],["하이부","198,500","+5.0%"],
+  ["한화오선","61,700","+2.7%"],["SK하이닉수","187,900","-0.8%"],["크스피","2,541","-1.2%"]];
+
+const PEOPLE = {
+  su:{name:"마이수",tag:"매수 성향 투자 비서 A형",img:"suPop",color:"var(--up)",
+      info:[["외형","붉은 장발 하이 포니테일, 붉은 눈, 송곳니"],["성격","하이텐션 낙관론자. 오르면 불타기, 떨어지면 물타기"],["좋아하는 것","레버리지, 테마주, 엠비디아, 떡상테크"],["약점","손실이 나면 눈을 피하며 조정이라고 우긴다. 크게 물리면 진심으로 기가 죽는다"],["기계 티","흥분하면 과열돼서 머리에서 김이 난다"]],
+      lines:["짜잔~! 크랙증권 투자 비서 A형, 마이수 등장! 너 부자 만들어 줄게♡","가즈아! 지금 안 사면 평생 후회해!","이, 이건 조정이야. 조정! 진짜야!"]},
+  do:{name:"마이도",tag:"매도 성향 투자 비서 B형",img:"doPop",color:"var(--down)",
+      info:[["외형","짙은 남색 트윈테일과 파란 브릿지, 일자 앞머리, 얇은 검은 안경"],["성격","확률과 데이터로 말하는 냉소적인 리스크 관리형. 손절은 칼같다"],["좋아하는 것","인버스, 농신 같은 방어주"],["약점","수익이 나면 분해서 인정을 못 한다. 사실은 계좌가 녹는 걸 누구보다 걱정한다"],["기계 티","분석할 때 눈에 파란 빛이 스친다"]],
+      lines:["B형, 마이도. 인사는 됐고, 계좌부터 볼게.","거봐, 내가 뭐랬어? 허접~ 허접 개미~","…수익 났네. 운이야, 운."]},
+};
+
+const $ = s => document.querySelector(s);
+const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function setImg(img, key){
+  img.src = CONFIG.imageBase + encodeURIComponent(CONFIG.images[key]);
+  img.onerror = () => {
+    const ph = document.createElement("div");
+    ph.className = "ph"; ph.textContent = img.alt || key;
+    img.replaceWith(ph);
+  };
+}
+document.querySelectorAll("img[data-src]").forEach(img => setImg(img, img.dataset.src));
+
+$("#start").href = CONFIG.crackUrl;
+$("#agree").href = CONFIG.crackUrl;
+$("#gallery").href = CONFIG.galleryUrl;
+
+/* 티커 */
+const tickHtml = TICK.map(([n,p,c]) => `<span><b>${n}</b>${p} <span class="${c[0]==="+"?"up":"down"}">${c}</span></span>`).join("");
+$("#ticker").innerHTML = tickHtml + tickHtml;
+
+/* 종목표 */
+$("#stockRows").innerHTML = STOCKS.map(([n,w,v,f,fake]) => {
+  const bars = Array.from({length:5},(_,i)=>`<i class="${i<v?"on":""}"></i>`).join("");
+  const fan = f==="su" ? `<span class="up">마이수 최애</span>` : f==="do" ? `<span class="down">마이도 취향</span>` : "";
+  return `<div class="row${fake?" fake":""}" role="row"><span class="tk" role="cell">${n}</span><span class="what" role="cell">${w}</span><span class="vol" role="cell" aria-label="변동성 5단계 중 ${v}">${bars}</span><span class="fan" role="cell">${fan}</span></div>`;
+}).join("");
+
+/* 거절 버튼 */
+const replies = ["거절 버튼은 이미 고장 났어. 허접~","눌러도 소용없다니까?","…진짜 계속 누를 거야?"];
+let tries = 0;
+$("#decline").addEventListener("click", e => {
+  const b = e.currentTarget;
+  b.classList.remove("shake"); void b.offsetWidth; b.classList.add("shake");
+  $("#reply").textContent = "마이도: " + replies[Math.min(tries++, replies.length-1)];
+});
+
+/* 팝업 */
+const modal = $("#modal");
+let lastFocus = null;
+function openModal(key){
+  const p = PEOPLE[key];
+  lastFocus = document.activeElement;
+  $("#mName").textContent = p.name; $("#mName").style.color = p.color;
+  $("#mTag").textContent = p.tag;
+  $("#mInfo").innerHTML = p.info.map(([k,v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("");
+  $("#mLines").innerHTML = p.lines.map(l => `<p>"${esc(l)}"</p>`).join("");
+  const holder = $("#mImg"); holder.innerHTML = "";
+  const img = document.createElement("img"); img.alt = p.name; holder.appendChild(img); setImg(img, p.img);
+  modal.classList.add("open"); $("#mClose").focus();
+}
+function closeModal(){ modal.classList.remove("open"); if(lastFocus) lastFocus.focus(); }
+document.querySelectorAll("[data-open]").forEach(b => b.addEventListener("click", () => openModal(b.dataset.open)));
+$("#mClose").addEventListener("click", closeModal);
+modal.addEventListener("click", e => { if(e.target === modal) closeModal(); });
+document.addEventListener("keydown", e => { if(e.key === "Escape" && modal.classList.contains("open")) closeModal(); });
+</script>
+</body>
+</html>
