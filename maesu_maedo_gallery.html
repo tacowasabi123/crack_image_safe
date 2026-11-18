@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>마이수 & 마이도 이미지 갤러리 | 크랙증권</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  :root{--bg:#EDF0F4;--paper:#FFFFFF;--ink:#1A2130;--sub:#7D879A;--line:#DCE1E8;--up:#E5334B;--down:#2C66F0;--up-soft:#FDECEF;--down-soft:#EAF0FE}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Pretendard Variable",Pretendard,system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;word-break:keep-all;-webkit-font-smoothing:antialiased}
+  button,input{font:inherit;color:inherit}
+  button{cursor:pointer;border:0;background:none}
+  a{color:inherit}
+  :focus-visible{outline:3px solid var(--ink);outline-offset:2px;border-radius:6px}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 20px}
+
+  header{position:sticky;top:0;z-index:20;background:rgba(237,240,244,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .bar{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:60px;flex-wrap:wrap;padding:8px 0}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px;letter-spacing:-.02em;text-decoration:none}
+  .brand i{width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,var(--up) 50%,var(--down) 50%)}
+  .brand small{font-weight:600;color:var(--sub);font-size:14px}
+  .tabs{display:flex;gap:4px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:4px}
+  .tab{padding:7px 12px;border-radius:9px;font-size:14px;font-weight:700;color:var(--sub);white-space:nowrap}
+  .tab span{font-weight:600;font-size:12.5px;margin-left:4px;opacity:.75}
+  .tab[aria-selected="true"]{background:var(--ink);color:#fff}
+  .tab[data-tab="마이수"][aria-selected="true"]{background:var(--up)}
+  .tab[data-tab="마이도"][aria-selected="true"]{background:var(--down)}
+
+  .tools{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:20px 0 14px}
+  .tools h1{font-size:24px;font-weight:850;letter-spacing:-.035em}
+  .search{display:flex;align-items:center;gap:8px;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:0 12px;min-width:240px}
+  .search input{border:0;background:transparent;padding:9px 0;width:100%;font-size:14.5px}
+  .search input:focus{outline:none}
+  .status{font-size:13.5px;color:var(--sub);padding-bottom:12px}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;padding-bottom:60px}
+  .item{background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden;text-align:left;display:flex;flex-direction:column}
+  .item:hover{border-color:var(--ink)}
+  .thumb{aspect-ratio:1216/832;background:var(--bg);overflow:hidden}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .cap{display:flex;align-items:center;gap:8px;padding:9px 11px;font-size:14px;font-weight:650}
+  .dot{width:8px;height:8px;border-radius:50%;flex:none;background:var(--sub)}
+  .dot.su{background:var(--up)} .dot.do{background:var(--down)} .dot.duo{background:linear-gradient(90deg,var(--up) 50%,var(--down) 50%)}
+  .empty{grid-column:1/-1;text-align:center;color:var(--sub);padding:60px 0}
+
+  .lb{position:fixed;inset:0;z-index:50;background:rgba(15,19,28,.88);display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:14px}
+  .lb.open{display:flex}
+  .lb img{max-width:min(1216px,100%);max-height:72vh;border-radius:12px;display:block}
+  .lb-name{color:#fff;font-weight:800;font-size:18px}
+  .lb-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  .lb-actions button,.lb-actions a{background:#fff;color:var(--ink);font-weight:700;font-size:14px;padding:10px 14px;border-radius:10px;text-decoration:none}
+  .lb-actions .code{font-family:inherit;background:#2A3243;color:#fff}
+  .nav{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;font-size:22px;font-weight:700}
+  .nav:hover{background:rgba(255,255,255,.3)}
+  .prev{left:16px} .next{right:16px}
+  .close{position:absolute;top:14px;right:16px;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;font-size:22px}
+  @media(max-width:640px){.nav{top:auto;bottom:16px;transform:none}.tabs{width:100%;overflow-x:auto}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap bar">
+    <a class="brand" id="home" href="maesu_maedo.html"><i aria-hidden="true"></i>크랙증권 <small>이미지 갤러리</small></a>
+    <div class="tabs" role="tablist" aria-label="캐릭터 선택" id="tabs"></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="tools">
+    <h1 id="title">전체</h1>
+    <label class="search"><span aria-hidden="true">🔍</span><input id="q" type="search" placeholder="이미지 이름 검색 (예: 기쁨, 설날)" aria-label="이미지 이름 검색"></label>
+  </div>
+  <p class="status" id="status">이미지 목록을 불러오는 중입니다.</p>
+  <div class="grid" id="grid" role="tabpanel" aria-labelledby="title"></div>
+</main>
+
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-labelledby="lbName">
+  <button class="close" id="lbClose" aria-label="닫기">×</button>
+  <button class="nav prev" id="lbPrev" aria-label="이전 이미지">‹</button>
+  <img id="lbImg" alt="">
+  <p class="lb-name" id="lbName"></p>
+  <div class="lb-actions">
+    <button class="code" id="copyCode" type="button"></button>
+    <button id="copyUrl" type="button">이미지 주소 복사</button>
+    <a id="openOrig" target="_blank" rel="noopener">원본 열기</a>
+  </div>
+  <button class="nav next" id="lbNext" aria-label="다음 이미지">›</button>
+</div>
+
+<script>
+/* ===== 여기만 바꾸면 됩니다 ===== */
+const CONFIG = {
+  owner: "tacowasabi123",
+  repo: "crack_image_safe",
+  branch: "main",
+  folder: "images/주식",
+  // 깃허브 페이지 주소. 꺼져 있으면 raw 주소로 자동 대체합니다.
+  pagesBase: "https://tacowasabi123.github.io/crack_image_safe/images/주식/",
+  siteUrl: "maesu_maedo.html",
+};
+// 깃허브 목록을 못 불러올 때 쓰는 예비 목록(작업표 기준)
+const FALLBACK = ["마이수_인사", "마이수_기쁨", "마이수_미소", "마이수_안심", "마이수_슬픔", "마이수_눈물", "마이수_미안함", "마이수_걱정", "마이수_삐짐", "마이수_빠직", "마이수_화남", "마이수_질투", "마이수_답답", "마이수_당황", "마이수_부끄러움", "마이수_민망", "마이수_놀람", "마이수_긴장", "마이수_의심", "마이수_무미건조", "마이수_자신만만", "마이수_비웃음", "마이수_경멸", "마이수_입 가리고 웃기", "마이도_기쁨", "마이도_미소", "마이도_안심", "마이도_슬픔", "마이도_눈물", "마이도_미안함", "마이도_걱정", "마이도_삐짐", "마이도_빠직", "마이도_화남", "마이도_질투", "마이도_답답", "마이도_당황", "마이도_부끄러움", "마이도_민망", "마이도_놀람", "마이도_긴장", "마이도_의심", "마이도_무미건조", "마이도_자신만만", "마이도_비웃음", "마이도_경멸", "마이도_입 가리고 웃기", "마이수_흥분", "마이수_감동", "마이수_졸림", "마이수_멘붕", "마이수_사색", "마이수_분함", "마이수_우쭐", "마이수_애교", "마이수_한숨", "마이수_허탈", "마이수_집중", "마이수_윙크", "마이수_가즈아", "마이수_매수 재촉", "마이수_조정이야", "마이수_과열", "마이수_풀매수", "마이수_물타기 설득", "마이수_레버리지 영업", "마이수_엠비디아 찬양", "마이수_상한가 축하", "마이수_하한가 절망", "마이수_손실 후 시무룩", "마이수_속보 놀람", "마이수_월간 점검 긴장", "마이수_수익 인증 셀카", "마이수_미국장 보다 졸기", "마이수_아침 차리기", "마이수_잠 깨우기", "마이수_소파 뒹굴기", "마이수_치킨 먹기", "마이수_팝콘 영화", "마이수_장보기", "마이수_빨래 개기", "마이수_청소기", "마이수_머리 말리기", "마이수_잘 자", "마이수_외출 준비", "마이수_비 오는 날", "마이수_장 마감 기지개", "마이수_게임 이김", "마이수_설날", "마이수_벚꽃 나들이", "마이수_여름 휴가", "마이수_추석 송편", "마이수_크리스마스", "마이수_연말 카운트다운", "마이수_다리 들기", "마이도_흥분", "마이도_감동", "마이도_졸림", "마이도_멘붕", "마이도_사색", "마이도_분함", "마이도_우쭐", "마이도_애교", "마이도_한숨", "마이도_허탈", "마이도_집중", "마이도_윙크", "마이도_차트 분석", "마이도_손절 재촉", "마이도_거봐", "마이도_인정 못 함", "마이도_몰래 걱정", "마이도_인버스 영업", "마이도_확률 계산", "마이도_손실 통보", "마이도_속보 보기", "마이도_월간 리포트", "마이도_몰래 기뻐하기", "마이도_공시 정독", "마이도_미국장 감시", "마이도_결산 메모", "마이도_하한가 의기양양", "마이도_설거지", "마이도_라면 먹기", "마이도_커피 내리기", "마이도_소파 독서", "마이도_안경 벗고 졸기", "마이도_빨래 널기", "마이도_영수증 확인", "마이도_잔소리", "마이도_샤워 후", "마이도_잘 자", "마이도_비 오는 창밖", "마이도_게임 짐", "마이도_외출 준비", "마이도_이불 정리", "마이도_뒷정리 한숨", "마이도_설날", "마이도_벚꽃 나들이", "마이도_여름 휴가", "마이도_추석 송편", "마이도_크리스마스", "마이도_연말 카운트다운", "마이도_다리 들기", "마이수·마이도_타이밍 싸움", "마이수·마이도_폭락 패닉", "마이수·마이도_상한가 하이파이브", "마이수·마이도_장 전 브리핑", "마이수·마이도_절전 모드", "마이수·마이도_볼 꼬집기", "마이수·마이도_같이 라면", "마이수·마이도_결산 파티"];
+
+const TABS = [["마이수","마이수"],["마이도","마이도"],["함께","둘이 함께"],["전체","전체"]];
+const $ = s => document.querySelector(s);
+let all = [], view = [], cur = "전체", idx = 0;
+
+function classify(base){
+  const pre = base.split("_")[0];
+  if (pre === "마이수") return "마이수";
+  if (pre === "마이도") return "마이도";
+  if (pre.includes("마이수") && pre.includes("마이도")) return "함께";
+  return "기타";
+}
+function makeItem(file, url){
+  const base = file.replace(/\.(png|jpe?g|webp|gif)$/i, "");
+  const cut = base.indexOf("_");
+  return { file, base, url, group: classify(base),
+           who: cut > 0 ? base.slice(0, cut) : base, what: cut > 0 ? base.slice(cut + 1) : base };
+}
+
+async function load(){
+  const api = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${encodeURIComponent(CONFIG.folder).replace(/%2F/g,"/")}?ref=${CONFIG.branch}`;
+  try {
+    const r = await fetch(api);
+    if (!r.ok) throw new Error(r.status);
+    const list = await r.json();
+    all = list.filter(f => f.type === "file" && /\.(png|jpe?g|webp|gif)$/i.test(f.name))
+              .map(f => makeItem(f.name, CONFIG.pagesBase + encodeURIComponent(f.name)));
+    all.forEach((it, i) => it.raw = list.find(f => f.name === it.file).download_url);
+    $("#status").dataset.src = "깃허브 폴더";
+  } catch (e) {
+    all = FALLBACK.map(n => makeItem(n + ".png", CONFIG.pagesBase + encodeURIComponent(n + ".png")));
+    all.forEach(it => it.raw = `https://raw.githubusercontent.com/${CONFIG.owner}/${CONFIG.repo}/${CONFIG.branch}/${CONFIG.folder}/${encodeURIComponent(it.file)}`);
+    $("#status").dataset.src = "예비 목록";
+  }
+  all.sort((a, b) => a.base.localeCompare(b.base, "ko"));
+  buildTabs();
+  const h = decodeURIComponent(location.hash.slice(1));
+  select(TABS.some(t => t[0] === h) ? h : "전체", false);
+}
+
+function buildTabs(){
+  $("#tabs").innerHTML = TABS.map(([k, label]) => {
+    const n = k === "전체" ? all.length : all.filter(i => i.group === k).length;
+    return `<button class="tab" role="tab" data-tab="${k}" aria-selected="false">${label}<span>${n}</span></button>`;
+  }).join("");
+  $("#tabs").addEventListener("click", e => { const b = e.target.closest(".tab"); if (b) select(b.dataset.tab, true); });
+}
+
+function select(tab, push){
+  cur = tab;
+  document.querySelectorAll(".tab").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === tab));
+  $("#title").textContent = TABS.find(t => t[0] === tab)[1];
+  if (push) history.replaceState(null, "", "#" + encodeURIComponent(tab));
+  render();
+}
+
+function render(){
+  const q = $("#q").value.trim();
+  view = all.filter(i => (cur === "전체" || i.group === cur) && (!q || i.base.includes(q)));
+  $("#status").textContent = `${view.length}장` + (q ? ` (검색: ${q})` : "");
+  if (!view.length) { $("#grid").innerHTML = `<p class="empty">찾는 이미지가 없습니다. 검색어를 바꿔 보세요.</p>`; return; }
+  $("#grid").innerHTML = view.map((it, i) => {
+    const dot = it.group === "마이수" ? "su" : it.group === "마이도" ? "do" : it.group === "함께" ? "duo" : "";
+    const label = cur === "전체" ? it.base : it.what;
+    return `<button class="item" data-i="${i}"><div class="thumb"><img loading="lazy" src="${it.url}" data-raw="${it.raw}" alt="${it.base}"></div><div class="cap"><span class="dot ${dot}"></span>${label}</div></button>`;
+  }).join("");
+  $("#grid").querySelectorAll("img").forEach(img => img.addEventListener("error", () => {
+    if (img.dataset.raw && img.src !== img.dataset.raw) img.src = img.dataset.raw;
+  }, { once: false }));
+}
+
+/* 라이트박스 */
+const lb = $("#lb");
+let lastFocus = null;
+function codeOf(it){ return `{{img::${it.who}::${it.what}}}`; }
+function show(i){
+  idx = (i + view.length) % view.length;
+  const it = view[idx];
+  const img = $("#lbImg");
+  img.onerror = () => { if (img.src !== it.raw) img.src = it.raw; };
+  img.src = it.url; img.alt = it.base;
+  $("#lbName").textContent = it.base;
+  $("#copyCode").textContent = codeOf(it) + " 복사";
+  $("#openOrig").href = it.raw;
+}
+function open(i){ lastFocus = document.activeElement; show(i); lb.classList.add("open"); $("#lbClose").focus(); }
+function close(){ lb.classList.remove("open"); if (lastFocus) lastFocus.focus(); }
+async function copy(text, btn, label){
+  try { await navigator.clipboard.writeText(text); btn.textContent = "복사했습니다"; }
+  catch (e) { prompt("아래 내용을 복사하세요", text); }
+  setTimeout(() => btn.textContent = label(), 1500);
+}
+$("#grid").addEventListener("click", e => { const b = e.target.closest(".item"); if (b) open(+b.dataset.i); });
+$("#lbClose").addEventListener("click", close);
+$("#lbPrev").addEventListener("click", () => show(idx - 1));
+$("#lbNext").addEventListener("click", () => show(idx + 1));
+lb.addEventListener("click", e => { if (e.target === lb) close(); });
+document.addEventListener("keydown", e => {
+  if (!lb.classList.contains("open")) return;
+  if (e.key === "Escape") close();
+  if (e.key === "ArrowLeft") show(idx - 1);
+  if (e.key === "ArrowRight") show(idx + 1);
+});
+$("#copyCode").addEventListener("click", e => copy(codeOf(view[idx]), e.currentTarget, () => codeOf(view[idx]) + " 복사"));
+$("#copyUrl").addEventListener("click", e => copy($("#lbImg").src, e.currentTarget, () => "이미지 주소 복사"));
+$("#q").addEventListener("input", render);
+$("#home").href = CONFIG.siteUrl;
+window.addEventListener("hashchange", () => { const h = decodeURIComponent(location.hash.slice(1)); if (TABS.some(t => t[0] === h)) select(h, false); });
+load();
+</script>
+</body>
+</html>
