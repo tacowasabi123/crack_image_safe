@@ -62,9 +62,16 @@
   .btn:active{transform:scale(.97)}
   .btn-yes{background:var(--ink);color:#fff}
   .btn-no{background:var(--bg);color:var(--sub)}
-  .btn-no.shake{animation:shake .4s}
+  .btn-opt{background:var(--bg);color:var(--ink);border:1px solid var(--line)}
+  .btn-opt:hover{border-color:var(--ink)}
+  #agree[aria-pressed="true"]{background:var(--up);border-color:var(--up);color:#fff}
+  #decline[aria-pressed="true"]{background:var(--down);border-color:var(--down);color:#fff}
+  .btn-opt.shake{animation:shake .4s}
+  .noti-go{display:block;margin-top:10px;text-align:center;background:var(--ink);color:#fff;font-weight:700;font-size:15px;padding:12px 0;border-radius:10px;text-decoration:none}
+  .noti-go[hidden]{display:none}
   @keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
-  .noti-reply{font-size:13.5px;color:var(--down);margin-top:10px;min-height:1.4em;font-weight:600}
+  .noti-reply{font-size:13.5px;margin-top:10px;min-height:1.4em;font-weight:600}
+  .noti-reply.su{color:var(--up)} .noti-reply.do{color:var(--down)}
   .cover{position:relative;border-radius:22px;overflow:hidden;aspect-ratio:832/1216;max-height:620px;justify-self:center;
          box-shadow:0 30px 60px -30px rgba(26,33,48,.5);background:linear-gradient(135deg,var(--up-soft),var(--down-soft))}
   .cover img{width:100%;height:100%;object-fit:cover}
@@ -253,10 +260,11 @@
           <div class="noti-head"><span>크랙증권</span><span>방금</span></div>
           <p>수익률 개선 프로젝트 'AI 투자 비서 베타 테스트'에 참여하시겠습니까?</p>
           <div class="noti-btns">
-            <a class="btn btn-yes" id="agree" href="#">동의</a>
-            <button class="btn btn-no" id="decline" type="button">거절</button>
+            <button class="btn btn-opt" id="agree" type="button" aria-pressed="false">동의</button>
+            <button class="btn btn-opt" id="decline" type="button" aria-pressed="false">거절</button>
           </div>
           <p class="noti-reply" id="reply" aria-live="polite"></p>
+          <a class="noti-go" id="notiGo" href="#" hidden>이야기 시작하기</a>
         </div>
       </div>
       <figure class="cover">
@@ -434,8 +442,8 @@
 const CONFIG = {
   crackUrl:   "#",   // 크랙 스토리 주소
   galleryUrl: "maesu_maedo_gallery.html",   // 이미지 갤러리 주소
-  // 깃허브 페이지 주소 + 폴더 (crack_image_safe 레포의 images/주식)
-  imageBase: "https://tacowasabi123.github.io/crack_image_safe/images/주식/",
+  // 이미지 주소 (클라우드플레어 R2, taco 버킷의 주식 폴더)
+  imageBase: "https://taco.me.uk/주식/",
   images: {
     cover: "표지.png",            // ← 표지 파일 이름으로 바꾸기
     su:    "마이수_인사.png",
@@ -484,7 +492,7 @@ function setImg(img, key){
 document.querySelectorAll("img[data-src]").forEach(img => setImg(img, img.dataset.src));
 
 $("#start").href = CONFIG.crackUrl;
-$("#agree").href = CONFIG.crackUrl;
+$("#notiGo").href = CONFIG.crackUrl;
 $("#gallery").href = CONFIG.galleryUrl;
 
 /* 티커 */
@@ -498,13 +506,27 @@ $("#stockRows").innerHTML = STOCKS.map(([n,w,v,f,fake]) => {
   return `<div class="row${fake?" fake":""}" role="row"><span class="tk" role="cell">${n}</span><span class="what" role="cell">${w}</span><span class="vol" role="cell" aria-label="변동성 5단계 중 ${v}">${bars}</span><span class="fan" role="cell">${fan}</span></div>`;
 }).join("");
 
-/* 거절 버튼 */
-const replies = ["거절 버튼은 이미 고장 났어. 허접~","눌러도 소용없다니까?","…진짜 계속 누를 거야?"];
-let tries = 0;
+/* 동의·거절 버튼 */
+const suLines = ["오~ 동의했네? 좋아, 오늘부터 너 부자 만들어 줄게♡","역시 내 고객! 바로 가즈아!","이거 누를 시간에 어서 차트 보러 가자!"];
+const doLines = ["거절 버튼은 이미 고장 났어. 허접~","눌러도 소용없다니까?","…진짜 계속 누를 거야?"];
+let suN = 0, doN = 0;
+function pick(which){
+  $("#agree").setAttribute("aria-pressed", which === "su");
+  $("#decline").setAttribute("aria-pressed", which === "do");
+}
+$("#agree").addEventListener("click", () => {
+  pick("su");
+  const r = $("#reply"); r.className = "noti-reply su";
+  r.textContent = "마이수: " + suLines[Math.min(suN++, suLines.length-1)];
+  $("#notiGo").hidden = false;
+});
 $("#decline").addEventListener("click", e => {
+  pick("do");
   const b = e.currentTarget;
   b.classList.remove("shake"); void b.offsetWidth; b.classList.add("shake");
-  $("#reply").textContent = "마이도: " + replies[Math.min(tries++, replies.length-1)];
+  const r = $("#reply"); r.className = "noti-reply do";
+  r.textContent = "마이도: " + doLines[Math.min(doN++, doLines.length-1)];
+  $("#notiGo").hidden = true;
 });
 
 /* 팝업 */
