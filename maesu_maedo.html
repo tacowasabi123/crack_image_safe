@@ -143,8 +143,27 @@
   .paste-text{font-size:14px;line-height:1.55;margin-bottom:12px;white-space:pre-wrap}
   .btn.copy{display:block;width:100%;flex:none}
 
+
+  /* 국장/미장 뒤집기 */
+  .market-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+  .market-now{font-size:14px;font-weight:700}
+  .flip-btn{font-size:14px;font-weight:700;padding:9px 14px;border-radius:10px;background:var(--paper);border:1px solid var(--line)}
+  .flip-btn:hover{border-color:var(--ink)}
+  .flip-btn[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .flip{display:grid;perspective:1600px}
+  .flip .face{grid-area:1/1;backface-visibility:hidden;-webkit-backface-visibility:hidden;transition:transform .6s cubic-bezier(.3,.7,.2,1)}
+  .flip .back{transform:rotateX(180deg)}
+  .flip.flipped .front{transform:rotateX(-180deg)}
+  .flip.flipped .back{transform:rotateX(0)}
+  .day.night{background:#1A2130;border-color:#1A2130;color:#fff}
+  .day.night > div + div{border-color:#2C3547}
+  .day.night p{color:#B4BCCB}
+  .day.night time{color:#9EBBFF}
+  .skip.dst{margin-top:10px}
+
   /* 하루 흐름 */
   .day{display:grid;grid-template-columns:repeat(3,1fr);gap:0;background:var(--paper);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+  @media (prefers-reduced-motion: reduce){.flip .face{transition:none}}
   .day > div{padding:22px 22px 24px}
   .day > div + div{border-left:1px solid var(--line)}
   .day time{font-size:26px;font-weight:850;letter-spacing:-.03em;display:block;margin-bottom:6px}
@@ -333,11 +352,23 @@
     <div class="wrap">
       <h2>하루는 이렇게 흘러갑니다</h2>
       <p class="desc">매매 결정은 언제나 고객님 몫입니다. 두 사람은 옆에서 조언하고, 싸우고, 결과에 따라 놀리거나 기죽을 뿐입니다.</p>
-      <div class="day">
-        <div><time>08:30</time><h3>장 전 브리핑</h3><p>오늘의 뉴스 한두 개와 정반대인 두 사람의 의견을 듣습니다.</p></div>
-        <div><time>09:00</time><h3>장 시작</h3><p>시세가 움직이고 이벤트가 터집니다. 사거나 팔거나, 버팁니다.</p></div>
-        <div><time>15:30</time><h3>장 마감</h3><p>오늘의 손익을 정산합니다. 주말과 휴장일에는 집에서의 일상이 이어집니다.</p></div>
+      <div class="market-head">
+        <p class="market-now" id="marketNow" aria-live="polite">국내장 기준, 한국 시간</p>
+        <button type="button" class="flip-btn" id="flipBtn" aria-pressed="false" aria-controls="flip">미국장 시간 보기</button>
       </div>
+      <div class="flip" id="flip">
+        <div class="day face front" aria-hidden="false">
+          <div><time>08:30</time><h3>장 전 브리핑</h3><p>오늘의 뉴스 한두 개와 정반대인 두 사람의 의견을 듣습니다.</p></div>
+          <div><time>09:00</time><h3>장 시작</h3><p>시세가 움직이고 이벤트가 터집니다. 사거나 팔거나, 버팁니다.</p></div>
+          <div><time>15:30</time><h3>장 마감</h3><p>오늘의 손익을 정산합니다. 주말과 휴장일에는 집에서의 일상이 이어집니다.</p></div>
+        </div>
+        <div class="day face back night" aria-hidden="true">
+          <div><time>18:00</time><h3>프리마켓 브리핑</h3><p>저녁을 먹으며 엠비디아와 테슬나의 장 전 시세를 확인합니다. 마이수 눈이 벌써 반짝입니다.</p></div>
+          <div><time>23:30</time><h3>정규장 시작</h3><p>밤샘 각입니다. 졸린 고객님 옆에서 둘이 사자, 팔자로 또 싸웁니다.</p></div>
+          <div><time>06:00</time><h3>장 마감</h3><p>밤새 지켜본 마이도와 노트북 앞에서 졸다 깬 마이수가 아침 결과를 보고합니다.</p></div>
+        </div>
+      </div>
+      <p class="skip dst" id="dstNote" hidden>3월 둘째 주부터 11월 첫째 주까지는 서머타임이라 미국장 시간이 한 시간씩 빨라집니다(프리마켓 17:00, 정규장 22:30, 마감 05:00).</p>
       <p class="skip">시간은 <code>다음 날</code> <code>일주일 넘겨</code> <code>한 달 넘겨</code>처럼 말하면 그동안의 등락을 요약해서 넘어갑니다.</p>
 
       <div class="year" aria-label="1년 동안의 주요 이벤트">
@@ -592,6 +623,17 @@ $("#copyBtn").addEventListener("click", async () => {
   setTimeout(() => b.textContent = "문장 복사하기", 2000);
 });
 renderRows();
+
+/* ===== 국장/미장 뒤집기 ===== */
+$("#flipBtn").addEventListener("click", e => {
+  const on = $("#flip").classList.toggle("flipped");
+  e.currentTarget.setAttribute("aria-pressed", on);
+  e.currentTarget.textContent = on ? "국내장 시간 보기" : "미국장 시간 보기";
+  $("#marketNow").textContent = on ? "미국장 기준, 한국 시간" : "국내장 기준, 한국 시간";
+  document.querySelector(".flip .front").setAttribute("aria-hidden", on);
+  document.querySelector(".flip .back").setAttribute("aria-hidden", !on);
+  $("#dstNote").hidden = !on;
+});
 </script>
 </body>
 </html>
