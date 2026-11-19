@@ -9,211 +9,267 @@
 <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Jua&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --fridge: #eef0ec;
-    --fridge-edge: #d9ddd6;
-    --paper: #fffdf6;
-    --ink: #3a3631;
-    --ink-soft: #7a736a;
-    --line: #e7e0d2;
-    --tape: rgba(240, 214, 140, .72);
+    --wall: #f7efe2;
+    --wall-line: rgba(214, 190, 150, .18);
+    --wood: #b98552;
+    --wood-dark: #7d5432;
+    --ink: #3d352c;
+    --ink-soft: #85786a;
+    --paper: #fffdf7;
+    --line: #eadfcd;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: 'Noto Sans KR', sans-serif;
     color: var(--ink);
-    background:
-      linear-gradient(90deg, transparent 0 calc(100% - 26px), var(--fridge-edge) calc(100% - 26px) calc(100% - 18px), transparent calc(100% - 18px)),
-      linear-gradient(180deg, #f6f7f4 0%, var(--fridge) 100%);
+    background-color: var(--wall);
+    background-image:
+      radial-gradient(circle at 12px 12px, rgba(226, 170, 120, .16) 2.5px, transparent 3px),
+      repeating-linear-gradient(90deg, transparent 0 46px, var(--wall-line) 46px 48px);
+    background-size: 48px 48px, auto;
     min-height: 100vh;
-    padding: 48px 20px 80px;
+    overflow-x: hidden;
   }
-  .wrap { max-width: 1120px; margin: 0 auto; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
 
-  /* 헤더 */
-  header { text-align: center; margin-bottom: 44px; position: relative; }
-  .magnet-row { display: flex; justify-content: center; gap: 8px; margin-bottom: 18px; }
-  .magnet-row span {
-    width: 34px; height: 34px; border-radius: 50%;
-    display: grid; place-items: center;
-    font-family: 'Jua', sans-serif; font-size: 15px; color: #fff;
-    box-shadow: 0 3px 0 rgba(0,0,0,.12), inset 0 -3px 0 rgba(0,0,0,.08);
+  /* ── 현관 문패 ── */
+  header { text-align: center; padding: 30px 0 46px; }
+  .nail { width: 14px; height: 14px; border-radius: 50%; background: #9a9a9a; margin: 0 auto; box-shadow: inset -2px -2px 0 rgba(0,0,0,.25); }
+  .strings { position: relative; width: 300px; height: 46px; margin: -7px auto 0; }
+  .strings::before, .strings::after {
+    content: ''; position: absolute; top: 0; width: 2px; height: 62px; background: #8a6a4a; transform-origin: top;
   }
-  h1 {
-    font-family: 'Jua', sans-serif;
-    font-size: clamp(44px, 8vw, 76px);
-    letter-spacing: -1px;
-    line-height: 1;
-  }
-  .subtitle {
-    margin-top: 14px;
-    font-family: 'Gaegu', cursive;
-    font-size: clamp(20px, 3vw, 25px);
-    color: var(--ink-soft);
-  }
-  .intro {
-    max-width: 620px; margin: 22px auto 0;
-    font-size: 15px; line-height: 1.85; color: var(--ink-soft);
-  }
-  .intro b { color: var(--ink); font-weight: 700; }
-
-  /* 당번표 */
-  .chart {
-    background: var(--paper);
-    border-radius: 6px;
-    padding: 34px 26px 28px;
+  .strings::before { left: 50%; transform: rotate(52deg); }
+  .strings::after  { left: 50%; transform: rotate(-52deg); }
+  .plate {
+    display: inline-block;
+    background: linear-gradient(180deg, #a87245, #8a5a33);
+    border-radius: 14px;
+    padding: 20px 46px 18px;
+    box-shadow: 0 10px 0 #5f3c20, 0 22px 30px -10px rgba(60,35,10,.5), inset 0 2px 0 rgba(255,255,255,.18);
     position: relative;
-    box-shadow: 0 1px 0 var(--line), 0 18px 40px -22px rgba(60,50,30,.35);
-    transform: rotate(-.4deg);
   }
-  .chart::before, .chart::after {
-    content: ''; position: absolute; top: -12px;
-    width: 110px; height: 28px; background: var(--tape);
+  .plate::before { /* 나뭇결 */
+    content: ''; position: absolute; inset: 0; border-radius: 14px; opacity: .25;
+    background: repeating-linear-gradient(176deg, transparent 0 9px, rgba(60,30,10,.35) 9px 10px, transparent 10px 21px);
   }
-  .chart::before { left: 34px; transform: rotate(-4deg); }
-  .chart::after  { right: 34px; transform: rotate(3deg); }
+  .plate h1 {
+    position: relative;
+    font-family: 'Jua', sans-serif; font-weight: 400;
+    font-size: clamp(40px, 7vw, 66px); color: #fff6e6; letter-spacing: -1px; line-height: 1.05;
+    text-shadow: 0 2px 0 #5f3c20;
+  }
+  .tiles { position: relative; display: flex; justify-content: center; gap: 6px; margin-top: 12px; }
+  .tiles span {
+    width: 32px; height: 32px; border-radius: 7px;
+    display: grid; place-items: center;
+    font-family: 'Jua', sans-serif; color: #fff; font-size: 16px;
+    box-shadow: inset 0 -3px 0 rgba(0,0,0,.18);
+  }
+  .welcome { margin-top: 34px; }
+  .welcome strong { font-family: 'Jua', sans-serif; font-weight: 400; font-size: clamp(24px, 4vw, 30px); }
+  .welcome p { margin-top: 10px; font-size: 15px; line-height: 1.85; color: var(--ink-soft); }
+
+  /* ── 냉장고 ── */
+  .fridge {
+    position: relative;
+    background: linear-gradient(160deg, #fbfcfa 0%, #e9eeea 100%);
+    border-radius: 34px;
+    padding: 46px 70px 44px 40px;
+    box-shadow: 0 2px 0 #fff inset, 0 0 0 1px #d8dfd9, 0 30px 50px -28px rgba(50,60,50,.45);
+  }
+  .fridge::after { /* 손잡이 */
+    content: ''; position: absolute; right: 24px; top: 70px; bottom: 70px; width: 14px;
+    border-radius: 10px; background: linear-gradient(90deg, #d5dbd6, #f4f6f4, #c9d0ca);
+    box-shadow: 0 4px 8px rgba(0,0,0,.12);
+  }
+  .fridge-label {
+    position: absolute; top: 16px; left: 40px;
+    font-family: 'Gaegu', cursive; font-size: 17px; color: #a2aaa3;
+  }
+  .magnet {
+    position: absolute; width: 26px; height: 26px; border-radius: 50%; z-index: 3;
+    box-shadow: 0 4px 0 rgba(0,0,0,.15), inset -3px -3px 0 rgba(0,0,0,.12);
+  }
+  .chart {
+    position: relative;
+    background: var(--paper);
+    border-radius: 4px;
+    padding: 30px 24px 24px;
+    box-shadow: 0 14px 26px -18px rgba(60,50,30,.55);
+    transform: rotate(-.5deg);
+  }
+  .chart .magnet.m1 { top: -11px; left: 26px; background: #e8463c; }
+  .chart .magnet.m2 { top: -11px; right: 26px; background: #5bb6e8; }
   .chart-head {
-    display: flex; justify-content: space-between; align-items: baseline;
-    border-bottom: 2px dashed var(--line); padding-bottom: 14px; margin-bottom: 20px;
+    display: flex; justify-content: space-between; align-items: baseline; gap: 10px;
+    border-bottom: 2px dashed var(--line); padding-bottom: 12px; margin-bottom: 18px;
   }
-  .chart-head h2 { font-family: 'Jua', sans-serif; font-size: 26px; }
+  .chart-head h2 { font-family: 'Jua', sans-serif; font-weight: 400; font-size: 26px; }
   .chart-head p { font-family: 'Gaegu', cursive; font-size: 19px; color: var(--ink-soft); }
 
-  .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; }
+  .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 11px; }
   .day {
-    position: relative;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    background: #fff;
-    cursor: pointer;
-    overflow: hidden;
+    position: relative; text-align: left; font: inherit; color: inherit;
+    border: 1px solid var(--line); border-radius: 10px; background: #fff;
+    cursor: pointer; overflow: hidden;
     transition: transform .18s ease, box-shadow .18s ease;
-    text-align: left;
-    font: inherit; color: inherit;
   }
-  .day:hover { transform: translateY(-4px); box-shadow: 0 12px 22px -14px rgba(0,0,0,.35); }
+  .day:hover { transform: translateY(-4px) rotate(-.6deg); box-shadow: 0 12px 22px -14px rgba(0,0,0,.35); }
   .day:focus-visible { outline: 3px solid var(--c); outline-offset: 2px; }
-  .day-top {
-    background: var(--c);
-    color: #fff;
-    padding: 8px 10px;
-    display: flex; justify-content: space-between; align-items: center;
-  }
-  .day-top .d { font-family: 'Jua', sans-serif; font-size: 22px; }
-  .day-top .o { font-size: 11px; opacity: .9; }
-  .thumb { aspect-ratio: 1 / 1; background: #f3efe6; overflow: hidden; }
+  .day-top { background: var(--c); color: #fff; padding: 7px 10px; display: flex; justify-content: space-between; align-items: center; }
+  .day-top .d { font-family: 'Jua', sans-serif; font-size: 21px; }
+  .day-top .o { font-size: 11px; opacity: .92; }
+  .thumb { aspect-ratio: 1 / 1; background: #f3ece0; overflow: hidden; }
   .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .3s; }
   .day:hover .thumb img { transform: scale(1.05); }
-  .day-body { padding: 10px 10px 12px; }
+  .day-body { padding: 9px 10px 11px; }
   .day-body .n { font-family: 'Jua', sans-serif; font-size: 19px; }
   .day-body .t { font-size: 12px; color: var(--ink-soft); margin-top: 3px; line-height: 1.45; }
-
   .day.today { border-color: var(--c); box-shadow: 0 0 0 2px var(--c); }
   .today-badge {
-    position: absolute; top: 42px; right: -4px; z-index: 2;
-    background: #e8463c; color: #fff;
-    font-family: 'Gaegu', cursive; font-weight: 700; font-size: 16px;
-    padding: 2px 10px 2px 8px;
-    transform: rotate(6deg);
-    box-shadow: 0 2px 4px rgba(0,0,0,.2);
-    display: none;
+    position: absolute; top: 40px; right: -4px; z-index: 2; display: none;
+    background: #e8463c; color: #fff; font-family: 'Gaegu', cursive; font-weight: 700; font-size: 16px;
+    padding: 2px 10px 2px 8px; transform: rotate(6deg); box-shadow: 0 2px 4px rgba(0,0,0,.2);
   }
   .day.today .today-badge { display: block; }
 
-  /* 규칙 메모 */
-  .notes { display: grid; grid-template-columns: 1.3fr 1fr; gap: 26px; margin-top: 44px; }
+  .notes { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; margin-top: 38px; }
   .memo {
-    background: #fff6b8;
-    padding: 26px 26px 22px;
-    font-family: 'Gaegu', cursive;
-    font-size: 20px; line-height: 1.6;
-    box-shadow: 0 14px 24px -18px rgba(60,50,0,.5);
-    transform: rotate(.8deg);
-    position: relative;
+    position: relative; padding: 26px 24px 20px;
+    font-family: 'Gaegu', cursive; font-size: 20px; line-height: 1.55;
+    box-shadow: 0 14px 22px -18px rgba(60,50,0,.5);
   }
-  .memo.blue { background: #dcefff; transform: rotate(-1deg); }
-  .memo h3 { font-family: 'Jua', sans-serif; font-size: 22px; margin-bottom: 10px; }
+  .memo.yellow { background: #fff4b0; transform: rotate(.8deg); }
+  .memo.pink { background: #ffe1e4; transform: rotate(-1deg); }
+  .memo .magnet { top: -12px; left: 50%; margin-left: -13px; }
+  .memo.yellow .magnet { background: #5db04c; }
+  .memo.pink .magnet { background: #f08a3c; }
+  .memo h3 { font-family: 'Jua', sans-serif; font-weight: 400; font-size: 21px; margin-bottom: 8px; }
   .memo ol, .memo ul { padding-left: 22px; }
-  .memo .pin {
-    position: absolute; top: -10px; left: 50%; width: 20px; height: 20px; margin-left: -10px;
-    border-radius: 50%; background: #e8463c; box-shadow: 0 3px 0 rgba(0,0,0,.18);
-  }
-  .memo.blue .pin { background: #5bb6e8; }
+  .memo .sign { text-align: right; margin-top: 8px; font-size: 18px; color: #b0606a; }
 
-  .cta { text-align: center; margin-top: 50px; }
+  /* ── 현관 신발장 ── */
+  .entry { margin-top: 70px; position: relative; }
+  .entry h2 { text-align: center; font-family: 'Jua', sans-serif; font-weight: 400; font-size: 24px; }
+  .entry > p { text-align: center; font-size: 14px; color: var(--ink-soft); margin-top: 6px; }
+  .floor {
+    margin-top: 22px;
+    background:
+      repeating-linear-gradient(90deg, transparent 0 158px, rgba(90,55,25,.25) 158px 160px),
+      linear-gradient(180deg, #c99665, #b07d4c);
+    border-radius: 18px 18px 0 0;
+    padding: 34px 20px 54px;
+    box-shadow: inset 0 6px 0 rgba(255,255,255,.12);
+  }
+  .slippers { display: flex; justify-content: center; flex-wrap: wrap; gap: 18px 14px; }
+  .pair { text-align: center; width: 92px; }
+  .pair .shoes { display: flex; justify-content: center; gap: 5px; }
+  .slipper {
+    width: 32px; height: 58px; border-radius: 16px 16px 13px 13px; position: relative;
+    background: #fff8ee; box-shadow: 0 5px 0 rgba(60,35,10,.35);
+  }
+  .slipper::before {
+    content: ''; position: absolute; left: -2px; right: -2px; top: 6px; height: 22px;
+    border-radius: 13px 13px 8px 8px; background: var(--c);
+    box-shadow: inset 0 -3px 0 rgba(0,0,0,.14);
+  }
+  .slipper.r { transform: rotate(5deg); }
+  .slipper.l { transform: rotate(-5deg); }
+  .pair span { display: block; margin-top: 12px; font-family: 'Jua', sans-serif; font-size: 15px; color: #fff6e6; text-shadow: 0 1px 0 rgba(60,35,10,.4); }
+  .pair.new span::after {
+    content: 'NEW'; margin-left: 4px; font-size: 10px; background: #e8463c; color: #fff;
+    padding: 1px 5px; border-radius: 6px; vertical-align: 2px; text-shadow: none;
+  }
+  .cta { text-align: center; margin-top: 38px; }
   .cta a {
-    display: inline-block;
-    font-family: 'Jua', sans-serif; font-size: 20px;
-    background: var(--ink); color: #fff; text-decoration: none;
-    padding: 15px 38px; border-radius: 999px;
-    box-shadow: 0 5px 0 #1d1b18;
+    display: inline-block; font-family: 'Jua', sans-serif; font-size: 20px;
+    background: #fff6e6; color: var(--wood-dark); text-decoration: none;
+    padding: 15px 40px; border-radius: 999px;
+    box-shadow: 0 5px 0 #6b4425;
     transition: transform .12s, box-shadow .12s;
   }
-  .cta a:active { transform: translateY(4px); box-shadow: 0 1px 0 #1d1b18; }
-  .cta p { margin-top: 12px; font-size: 13px; color: var(--ink-soft); }
+  .cta a:active { transform: translateY(4px); box-shadow: 0 1px 0 #6b4425; }
+  .cta p { margin-top: 12px; font-size: 13px; color: #f6e5cd; }
 
-  /* 팝업 */
+  /* ── 팝업: 가족 앨범 ── */
   .modal-bg {
-    position: fixed; inset: 0; background: rgba(30,28,25,.55);
-    display: none; align-items: center; justify-content: center;
-    padding: 20px; z-index: 50;
-    backdrop-filter: blur(3px);
+    position: fixed; inset: 0; background: rgba(40,30,20,.55); backdrop-filter: blur(3px);
+    display: none; align-items: center; justify-content: center; padding: 20px; z-index: 50;
   }
   .modal-bg.open { display: flex; animation: fade .2s ease; }
   @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
   .modal {
-    background: var(--paper);
-    width: 100%; max-width: 820px; max-height: 92vh; overflow-y: auto;
-    border-radius: 14px;
-    display: grid; grid-template-columns: 1fr 1fr;
-    position: relative;
-    border-top: 8px solid var(--c);
+    position: relative; width: 100%; max-width: 840px; max-height: 92vh; overflow-y: auto;
+    background: #f3e6cf; border-radius: 10px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+    box-shadow: 0 30px 60px -20px rgba(0,0,0,.5);
     animation: pop .25s cubic-bezier(.2,1.3,.4,1);
   }
   @keyframes pop { from { transform: scale(.94); } to { transform: scale(1); } }
+  .modal::before { /* 앨범 가운데 접힘 */
+    content: ''; position: absolute; top: 0; bottom: 0; left: 50%; width: 24px; margin-left: -12px;
+    background: linear-gradient(90deg, transparent, rgba(0,0,0,.08), transparent); pointer-events: none;
+  }
   .close {
     position: absolute; top: 10px; right: 12px; z-index: 3;
     width: 36px; height: 36px; border-radius: 50%; border: none;
-    background: rgba(255,255,255,.9); font-size: 20px; cursor: pointer; color: var(--ink);
+    background: rgba(255,255,255,.85); font-size: 20px; cursor: pointer; color: var(--ink);
   }
-  .m-img { background: #f3efe6; display: flex; flex-direction: column; }
-  .m-img .main { aspect-ratio: 1 / 1; width: 100%; object-fit: cover; display: block; }
-  .emotions { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px; }
+  .m-left { padding: 34px 28px 24px; display: flex; flex-direction: column; align-items: center; }
+  .polaroid {
+    background: #fff; padding: 12px 12px 44px; width: 100%; max-width: 330px;
+    box-shadow: 0 10px 20px -10px rgba(0,0,0,.35); transform: rotate(-2deg); position: relative;
+  }
+  .polaroid::before { /* 사진 테이프 */
+    content: ''; position: absolute; top: -12px; left: 50%; width: 90px; height: 24px; margin-left: -45px;
+    background: rgba(240, 214, 140, .75); transform: rotate(3deg);
+  }
+  .polaroid img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block; background: #eee; }
+  .polaroid .cap {
+    position: absolute; left: 0; right: 0; bottom: 10px; text-align: center;
+    font-family: 'Gaegu', cursive; font-size: 20px; color: var(--ink-soft);
+  }
+  .emotions { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 22px; }
   .emotions button {
-    font: 500 13px 'Noto Sans KR', sans-serif;
-    border: 1px solid var(--line); background: #fff; color: var(--ink-soft);
-    padding: 5px 11px; border-radius: 999px; cursor: pointer;
+    font: 500 13px 'Noto Sans KR', sans-serif; border: 1px solid #dcc9a8; background: #fffaf0;
+    color: var(--ink-soft); padding: 5px 11px; border-radius: 999px; cursor: pointer;
   }
   .emotions button.on { background: var(--c); border-color: var(--c); color: #fff; }
-  .m-info { padding: 30px 28px 28px; }
+  .m-right {
+    padding: 34px 30px 30px;
+    background-image: repeating-linear-gradient(180deg, transparent 0 31px, rgba(160,130,90,.18) 31px 32px);
+  }
   .m-day { font-family: 'Jua', sans-serif; color: var(--c); font-size: 16px; }
   .m-name { font-family: 'Jua', sans-serif; font-size: 40px; line-height: 1.1; margin-top: 2px; }
-  .m-tag { font-family: 'Gaegu', cursive; font-size: 21px; color: var(--ink-soft); margin-top: 6px; }
-  .m-sec { margin-top: 20px; }
-  .m-sec h4 {
-    font-size: 12px; letter-spacing: .08em; color: var(--ink-soft); font-weight: 700;
-    margin-bottom: 6px;
-  }
+  .m-tag { font-family: 'Gaegu', cursive; font-size: 21px; color: var(--ink-soft); margin-top: 4px; }
+  .m-sec { margin-top: 16px; }
+  .m-sec h4 { font-size: 12px; letter-spacing: .06em; color: var(--c); font-weight: 700; margin-bottom: 4px; }
   .m-sec p { font-size: 14.5px; line-height: 1.75; }
   .m-sec.two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   .quote {
-    margin-top: 22px; padding: 14px 16px;
-    background: #fff; border-left: 4px solid var(--c); border-radius: 0 8px 8px 0;
-    font-size: 15px; line-height: 1.6;
+    margin-top: 20px; padding: 13px 16px; background: #fffaf0;
+    border-left: 4px solid var(--c); border-radius: 0 8px 8px 0;
+    font-family: 'Gaegu', cursive; font-size: 19px; line-height: 1.5;
   }
 
   @media (max-width: 960px) {
     .days { grid-template-columns: repeat(4, 1fr); }
   }
-  @media (max-width: 640px) {
-    body { padding: 32px 14px 60px; }
-    .chart { padding: 28px 14px 18px; transform: none; }
-    .chart-head { flex-direction: column; gap: 4px; }
+  @media (max-width: 680px) {
+    .fridge { padding: 42px 16px 26px; border-radius: 24px; }
+    .fridge::after { display: none; }
+    .fridge-label { left: 18px; }
+    .chart { padding: 26px 12px 16px; transform: none; }
+    .chart-head { flex-direction: column; gap: 2px; }
     .days { grid-template-columns: repeat(2, 1fr); }
     .notes { grid-template-columns: 1fr; }
     .modal { grid-template-columns: 1fr; }
-    .m-info { padding: 22px 20px 24px; }
+    .modal::before { display: none; }
+    .m-right { padding: 24px 20px 26px; }
     .m-name { font-size: 32px; }
     .m-sec.two { grid-template-columns: 1fr; }
+    .plate { padding: 18px 26px 16px; }
   }
 </style>
 </head>
@@ -221,58 +277,75 @@
 <div class="wrap">
 
   <header>
-    <div class="magnet-row" id="magnets"></div>
-    <h1>주 7일 근무</h1>
-    <p class="subtitle">쉬는 날이 제일 바쁜 집에 오신 걸 환영합니다</p>
-    <p class="intro">
-      요일들이 사람 모습으로 모여 사는 집. 일요일 <b>일라</b>는 여섯 요일의 엄마예요.<br>
-      쉬는 날을 맡았지만 한 번도 쉬어 본 적 없는 그녀가, 드디어 <b>관리인</b>을 들였습니다.<br>
-      오늘부터 이 집의 집안일은 당신과, 그날의 당번이 함께합니다.
-    </p>
+    <div class="nail"></div>
+    <div class="strings"></div>
+    <div class="plate">
+      <h1>주 7일 근무</h1>
+      <div class="tiles" id="tiles"></div>
+    </div>
+    <div class="welcome">
+      <strong>어서 오세요, 새 관리인님!</strong>
+      <p>요일 일곱이 모여 사는 집이에요.<br>매일 그날의 당번이 곁에서 집안일을 함께할 거예요.</p>
+    </div>
   </header>
 
-  <section class="chart">
-    <div class="chart-head">
-      <h2>이번 주 당번표</h2>
-      <p>칸을 누르면 자기소개를 해 줘요</p>
+  <section class="fridge">
+    <span class="fridge-label">우리 집 냉장고</span>
+    <div class="chart">
+      <span class="magnet m1"></span><span class="magnet m2"></span>
+      <div class="chart-head">
+        <h2>이번 주 당번표</h2>
+        <p>칸을 누르면 자기소개를 해 줘요</p>
+      </div>
+      <div class="days" id="days"></div>
     </div>
-    <div class="days" id="days"></div>
+
+    <div class="notes">
+      <div class="memo yellow">
+        <span class="magnet"></span>
+        <h3>관리인 수칙</h3>
+        <ol>
+          <li>그날 요일인 아이가 당번! 하루 종일 같이 집안일을 해요.</li>
+          <li>어제 당번은 녹초가 돼 있으니 깨우지 말 것.</li>
+          <li>내일 당번은 들떠 있거나 날이 서 있어요.</li>
+          <li>날짜가 바뀌면 당번도 바뀝니다.</li>
+          <li>첫째, 막내는 편의상 순서일 뿐! 요일에게 나이는 큰 의미 없답니다.</li>
+        </ol>
+      </div>
+      <div class="memo pink">
+        <span class="magnet"></span>
+        <h3 id="memo-title">엄마의 메모</h3>
+        <ul id="memo-list"></ul>
+        <div class="sign">― 일라</div>
+      </div>
+    </div>
   </section>
 
-  <section class="notes">
-    <div class="memo">
-      <span class="pin"></span>
-      <h3>관리인 수칙</h3>
-      <ol>
-        <li>그날 요일인 아이가 당번! 하루 종일 같이 집안일을 해요.</li>
-        <li>어제 당번은 녹초가 돼 있으니 깨우지 말 것.</li>
-        <li>내일 당번은 들떠 있거나 날이 서 있어요.</li>
-        <li>날짜가 바뀌면 당번도 바뀝니다.</li>
-        <li>첫째, 막내는 편의상 순서일 뿐! 요일에게 나이는 큰 의미 없답니다.</li>
-      </ol>
-    </div>
-    <div class="memo blue">
-      <span class="pin"></span>
-      <h3 id="memo-title">엄마의 메모</h3>
-      <ul id="memo-list"></ul>
+  <section class="entry">
+    <h2>현관</h2>
+    <p>신발 벗고 들어오세요. 관리인님 슬리퍼도 준비해 뒀어요.</p>
+    <div class="floor">
+      <div class="slippers" id="slippers"></div>
+      <div class="cta">
+        <a href="#" id="crack-link">문 열고 들어가기</a>
+        <p>크랙에서 만나요</p>
+      </div>
     </div>
   </section>
-
-  <div class="cta">
-    <a href="#" id="crack-link">대화 시작하기</a>
-    <p>크랙에서 만나요</p>
-  </div>
 
 </div>
 
 <div class="modal-bg" id="modal-bg">
   <div class="modal" id="modal" role="dialog" aria-modal="true">
     <button class="close" id="close" aria-label="닫기">×</button>
-    <div class="m-img">
-      <img class="main" id="m-main" alt="">
+    <div class="m-left">
+      <div class="polaroid">
+        <img id="m-main" alt="">
+        <div class="cap" id="m-cap"></div>
+      </div>
       <div class="emotions" id="m-emotions"></div>
     </div>
-    <div class="m-info">
+    <div class="m-right">
       <div class="m-day" id="m-day"></div>
       <div class="m-name" id="m-name"></div>
       <div class="m-tag" id="m-tag"></div>
@@ -299,10 +372,10 @@
   // getDay() 순서: 0=일 ~ 6=토
   const CAST = [
     { day: '일', name: '일라', order: '엄마', color: '#F08A3C',
-      tag: '쉬는 날을 맡았지만 쉬어 본 적 없는 엄마',
+      tag: '여섯 요일의 다정한 엄마',
       pers: '따뜻하고 느긋하지만 늘 지쳐 있어요. 쉬는 법을 몰라서 쉬라고 하면 오히려 안절부절못해요. 화나면 눈 감고 웃는데, 그게 제일 무서워요. 일요일 저녁이면 내일 출근할 딸들 걱정에 시무룩해져요.',
       work: '세상에 휴식을 나눠 줘요. 다 나눠 주고 나면 정작 자기 몫은 남지 않아요.',
-      duty: '쉬라고 있는 날인데 일주일 치 반찬과 대청소를 몰아서 해요. 누가 말려야 겨우 앉아요.',
+      duty: '일주일 치 반찬과 대청소를 몰아서 해요. 누가 말려야 겨우 앉아요.',
       callUser: '"관리인 씨" · 다정한 존댓말',
       callSis: '딸들은 이름으로 불러요.',
       quote: '"오늘은 제 차례니까요. 반찬 열두 가지만 더 하면 끝나요!"' },
@@ -312,7 +385,7 @@
       work: '멈춰 있던 세상을 다시 굴려요. 사람들을 깨우느라 원망을 혼자 다 받아요.',
       duty: '장보기와 주간 일정표를 맡아요. 투덜대면서도 빈틈없이 해 놔요.',
       callUser: '"관리인" · 퉁명스러운 반말',
-      callSis: '첫째답게 동생들은 전부 이름으로 불러요.',
+      callSis: '동생들은 전부 이름으로 불러요.',
       quote: '"...뭘 봐. 장 볼 거 적어 놨으니까 그거나 봐."' },
     { day: '화', name: '화조', order: '둘째', color: '#C0283A',
       tag: '아까부터 여기 있었던 둘째',
@@ -323,7 +396,7 @@
       callSis: '동생들한테도 존댓말을 써요.',
       quote: '"저... 창틀 닦아 놨는데요. 아, 아니에요. 그냥 그렇다고요..."' },
     { day: '수', name: '수아', order: '셋째', color: '#4FA9DE',
-      tag: '한 주의 반환점, 한숨 많은 셋째',
+      tag: '한숨은 많아도 제일 잘 챙기는 셋째',
       pers: '한숨이 많은 중간 관리자 타입이에요. 투덜대면서도 가족과 관리인을 제일 잘 챙기는 잔소리꾼이에요.',
       work: '지친 사람들이 한 주의 반을 넘길 수 있도록 버틸 힘을 나눠 줘요.',
       duty: '냉장고 유통기한, 가계부, 밀린 빨래를 점검하느라 잔소리가 두 배가 돼요.',
@@ -331,7 +404,7 @@
       callSis: '월이·화조는 언니, 동생들한테는 반말해요.',
       quote: '"하아... 이거 유통기한 지났잖아요. 밥은 드셨어요?"' },
     { day: '목', name: '목련', order: '넷째', color: '#5DB04C',
-      tag: '금요일 직전, 김칫국부터 마시는 넷째',
+      tag: '김칫국부터 마시는 들뜬 넷째',
       pers: '늘 들떠 있고, 김칫국부터 마셔요. 금비를 부러워해요. 아직 목요일인 걸 깨달으면 크게 실망해요.',
       work: '사람들 마음에 \'조금만 더\'라는 기대를 심어요. 그 기대를 누리는 건 정작 금비지만요.',
       duty: '내일 금요일 생각에 파티 장식부터 사 와요. 집안일은 자꾸 뒷전이 돼요.',
@@ -355,42 +428,6 @@
       callSis: '막내지만 전부 반말. 월이는 "월요병"이라고 놀려요.',
       quote: '"빨래 개기 시합 할래? 지는 사람이 아이스크림 사기!"' },
   ];
-
-  const enc = s => encodeURIComponent(s);
-  const imgUrl = (name, emo) => IMG_BASE + enc(`${name}_${emo}.png`);
-  const rawUrl = (name, emo) => RAW_BASE + enc(`${name}_${emo}.png`);
-  function setImg(el, name, emo) {
-    el.onerror = () => { el.onerror = null; el.src = rawUrl(name, emo); };
-    el.src = imgUrl(name, emo);
-    el.alt = `${name} ${emo}`;
-  }
-
-  // 자석
-  const magnets = document.getElementById('magnets');
-  CAST.forEach(c => {
-    const s = document.createElement('span');
-    s.textContent = c.day;
-    s.style.background = c.color;
-    magnets.appendChild(s);
-  });
-
-  // 당번표
-  const today = new Date().getDay();
-  const daysEl = document.getElementById('days');
-  CAST.forEach((c, i) => {
-    const b = document.createElement('button');
-    b.className = 'day' + (i === today ? ' today' : '');
-    b.style.setProperty('--c', c.color);
-    b.innerHTML = `
-      <div class="day-top"><span class="d">${c.day}</span><span class="o">${c.order}</span></div>
-      <span class="today-badge">오늘의 당번!</span>
-      <div class="thumb"><img loading="lazy"></div>
-      <div class="day-body"><div class="n">${c.name}</div><div class="t">${c.tag}</div></div>`;
-    setImg(b.querySelector('img'), c.name, '미소');
-    b.addEventListener('click', () => openModal(c));
-    daysEl.appendChild(b);
-  });
-
 
   // 엄마의 메모: 오늘 당번과 하루를 보내는 법 (0=일 ~ 6=토)
   const MEMO = [
@@ -423,6 +460,43 @@
      '어제 파티로 녹초가 된 금비는 깨우지 말아 주세요.',
      '월이를 "월요병"이라 놀리면 적당히 말려 주시고요.'],
   ];
+
+  const enc = s => encodeURIComponent(s);
+  const imgUrl = (name, emo) => IMG_BASE + enc(`${name}_${emo}.png`);
+  const rawUrl = (name, emo) => RAW_BASE + enc(`${name}_${emo}.png`);
+  function setImg(el, name, emo) {
+    el.onerror = () => { el.onerror = null; el.src = rawUrl(name, emo); };
+    el.src = imgUrl(name, emo);
+    el.alt = `${name} ${emo}`;
+  }
+
+  // 문패 타일 (현관 문패는 월~일 순서)
+  const tiles = document.getElementById('tiles');
+  [1, 2, 3, 4, 5, 6, 0].forEach(i => {
+    const s = document.createElement('span');
+    s.textContent = CAST[i].day;
+    s.style.background = CAST[i].color;
+    tiles.appendChild(s);
+  });
+
+  // 당번표
+  const today = new Date().getDay();
+  const daysEl = document.getElementById('days');
+  CAST.forEach((c, i) => {
+    const b = document.createElement('button');
+    b.className = 'day' + (i === today ? ' today' : '');
+    b.style.setProperty('--c', c.color);
+    b.innerHTML = `
+      <div class="day-top"><span class="d">${c.day}</span><span class="o">${c.order}</span></div>
+      <span class="today-badge">오늘의 당번!</span>
+      <div class="thumb"><img loading="lazy"></div>
+      <div class="day-body"><div class="n">${c.name}</div><div class="t">${c.tag}</div></div>`;
+    setImg(b.querySelector('img'), c.name, '미소');
+    b.addEventListener('click', () => openModal(c));
+    daysEl.appendChild(b);
+  });
+
+  // 엄마의 메모
   document.getElementById('memo-title').textContent = `엄마의 메모 · ${CAST[today].day}요일`;
   const memoList = document.getElementById('memo-list');
   MEMO[today].forEach(t => {
@@ -431,11 +505,22 @@
     memoList.appendChild(li);
   });
 
+  // 현관 슬리퍼 (일곱 켤레 + 관리인)
+  const slippers = document.getElementById('slippers');
+  [...CAST, { name: '관리인', color: '#b8b2a8', isNew: true }].forEach(c => {
+    const p = document.createElement('div');
+    p.className = 'pair' + (c.isNew ? ' new' : '');
+    p.style.setProperty('--c', c.color);
+    p.innerHTML = `<div class="shoes"><div class="slipper l"></div><div class="slipper r"></div></div><span>${c.name}</span>`;
+    slippers.appendChild(p);
+  });
+
   // 팝업
   const bg = document.getElementById('modal-bg');
   const modal = document.getElementById('modal');
   const mMain = document.getElementById('m-main');
   const mEmo = document.getElementById('m-emotions');
+  const mCap = document.getElementById('m-cap');
 
   function openModal(c) {
     modal.style.setProperty('--c', c.color);
@@ -443,12 +528,13 @@
     document.getElementById('m-name').textContent = c.name;
     document.getElementById('m-tag').textContent = c.tag;
     document.getElementById('m-pers').textContent = c.pers;
-    document.getElementById('m-duty').textContent = c.duty;
     document.getElementById('m-work').textContent = c.work;
+    document.getElementById('m-duty').textContent = c.duty;
     document.getElementById('m-call').textContent = c.callUser;
     document.getElementById('m-sis').textContent = c.callSis;
     document.getElementById('m-quote').textContent = c.quote;
     setImg(mMain, c.name, '미소');
+    mCap.textContent = `${c.name} · 미소`;
     mEmo.innerHTML = '';
     EMOTIONS.forEach((e, idx) => {
       const btn = document.createElement('button');
@@ -458,6 +544,7 @@
         mEmo.querySelectorAll('button').forEach(x => x.classList.remove('on'));
         btn.classList.add('on');
         setImg(mMain, c.name, e);
+        mCap.textContent = `${c.name} · ${e}`;
       });
       mEmo.appendChild(btn);
     });
